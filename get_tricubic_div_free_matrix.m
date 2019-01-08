@@ -9,9 +9,27 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
 %
 %   Divergence free is obtained by interpolating a 3D vector field A and
 %   taking its curl. The vector field is constrained such that its curl
-%   equals the field values at the 8 corners, and that the curl of the curl
-%   is also zero at the eight corners (Ampère's law with no  enclosed
-%   currents)
+%   equals the field values at the 8 corners,
+%   The values of first derivative of the magnetic field are also constrained
+%   at the eight corners.
+%
+%   The ordering of d is:
+%   [Bx^j; By^j; Bz^j; dBx^j/dx; dBx^j/dy; dBx^j/dz; 
+%   dBy^j/dx; dBy^j/dy; dBy^j/dz; dBz^j/dx; dBz^j/dy; dBz^j/dz] where j
+%   is 0..7 and the number of the corner
+%   
+%   The corners are numbered
+%   x y z
+%   0 0 0
+%   0 0 1
+%   0 1 0
+%   0 1 1
+%   1 0 0 
+%   1 0 1 
+%   1 1 0 
+%   1 1 1 
+%
+%   
 %   Returns:
 %       - the interpolation matrix M
 %       - the interpolation function 

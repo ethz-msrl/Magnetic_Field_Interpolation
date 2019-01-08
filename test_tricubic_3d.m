@@ -13,8 +13,6 @@ zd = zd(:);
 
 nodes = [xd, yd, zd];
 
-eps = 21;
-
 currents = [-1.963839324961165,-8.480666166183163,-5.201676928926839,-7.533621303296689,-6.321844234351666,-5.200949486701944,-1.654658618312610,-9.006911393485158, 1]';
 
 values = zeros(length(xd), 3);
@@ -30,9 +28,9 @@ syms x y z
 %% Evaluation part
 
 % normalize the values to the input grid
-xve = linspace(-0.0525, 0.0525, 20);
-yve = linspace(-0.04, 0.04, 20);
-zve = linspace(-0.0475, 0.0875, 20);
+xve = linspace(-0.0525, 0.0524, 10);
+yve = linspace(-0.04, 0.039, 10);
+zve = linspace(-0.0475, 0.0874, 10);
 
 [xd, yd, zd] = ndgrid(xve, yve, zve);
 
@@ -156,6 +154,7 @@ for i = 1:length(xd)
 end
 
 fprintf('average error: %f mT\n', 1000 * mean(sqrt(sum((real - interp).^2, 2))));
+fprintf('median error: %f mT\n', 1000 * median(sqrt(sum((real - interp).^2, 2))));
 
 figure;
 hold on;

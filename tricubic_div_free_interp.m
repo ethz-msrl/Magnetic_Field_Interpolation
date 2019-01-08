@@ -14,12 +14,6 @@ currents = [6.7573    4.3353   -7.3174   -1.9490    3.2694    3.6722   -4.4116  
 fields = zeros(8, 3);
 grads = zeros(8,9);
 
-Bx_x = zeros(1,8);
-By_y = zeros(1,8);
-Bx_y = zeros(1,8);
-Bx_z = zeros(1,8);
-By_z = zeros(1,8);
-
 eps = SCALE;
 
 for i = 1:8
@@ -53,25 +47,25 @@ for i = 1:8
     BG_ny_nz = magSystem.FieldAndGradient(pos_ny_nz, currents);
     
     % dBx/dx
-    Bx_x(:) = (BG_px(1) - BG_nx(1))/(2);
+    Bx_x = (BG_px(1) - BG_nx(1))/(2);
     grads(i,1) = Bx_x;
     
     % dBy/dy
-    By_y(:) = (BG_py(2) - BG_ny(2))/(2);
+    By_y = (BG_py(2) - BG_ny(2))/(2);
     grads(i,5) = By_y;
     
     % dBx/dy
-    Bx_y(:) = (BG_py(1) - BG_ny(1))/(2);
+    Bx_y = (BG_py(1) - BG_ny(1))/(2);
     grads(i,2) = Bx_y;
     grads(i,4) = Bx_y; 
     
     % dBx/dz
-    Bx_z(:) = (BG_pz(1) - BG_nz(1))/2;
+    Bx_z = (BG_pz(1) - BG_nz(1))/2;
     grads(i,3) = Bx_z;
     grads(i,7) = Bx_z;
     
     % dBy/dz
-    By_z(:) = (BG_pz(2) - BG_nz(2))/2;
+    By_z = (BG_pz(2) - BG_nz(2))/2;
     grads(i,6) = By_z;
     grads(i,8) = By_z;
     
@@ -132,9 +126,10 @@ end
 %     Bx_yz(:,i) = (BG_py_pz(1) - BG_ny_pz(1) - BG_py_nz(1) + BG_ny_nz(1)) / (4);
 % end
 
-D = zeros(48,1);
-D(1:24) = [
+%D = zeros(48,1);
+D = [
     reshape(fields', 8*3,1);
+    reshape(grads', 8*9, 1);
     ];
 %     Bx_x';
 %     Bx_y';

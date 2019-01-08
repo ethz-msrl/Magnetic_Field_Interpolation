@@ -45,6 +45,7 @@ for i = 1:length(xd)
 end
 
 fprintf('average error: %f mT\n', 1000 * mean(sqrt(sum((real - interp).^2, 2))));
+fprintf('median error: %f mT\n', 1000 * median(sqrt(sum((real - interp).^2, 2))));
 
 figure;
 hold on;
