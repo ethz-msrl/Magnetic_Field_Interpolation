@@ -64,8 +64,6 @@ P = spcol(k_p, D, zv);
 Z = kron(kron(N,M), P);
 C = Z \ values;
 
-%% Spline fit with zero-divergence
-
 %% Compare
 
 N = spcol(k_n, D, xve);
@@ -116,7 +114,7 @@ for i = 1:length(nkv)
 
 end
 
-figure;
+
 plot(nkv, avg_errors);
 
 %% Grid size
