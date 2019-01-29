@@ -31,9 +31,9 @@ end
 %% Evaluation part
 
 % normalize the values to the input grid
-xve = linspace(-0.0525, 0.0525, 10);
-yve = linspace(-0.04, 0.04, 10);
-zve = linspace(-0.0475, 0.0875, 10);
+xve = linspace(-0.0525, 0.0525, 16);
+yve = linspace(-0.04, 0.04, 16);
+zve = linspace(-0.0475, 0.0875, 16);
 
 [xde, yde, zde] = ndgrid(xve, yve, zve);
 
@@ -48,7 +48,6 @@ for i = 1:length(xde)
 end
 
 %% Spline Fit
-nk = 5;
 
 % this gets the appropriate knot sequence that satisfies the
 % Schoenberg-Whitney condition
@@ -60,7 +59,8 @@ N = spcol(k_n, dim, xv);
 M = spcol(k_m, dim, yv);
 P = spcol(k_p, dim, zv);
 
-Zi = kron(kron(N,M), P);
+%Zi = kron(kron(N,M), P);
+Zi = kron(P, kron(M, N));
 % we align the coefficients as [Cijkx Cijky; Cijkz]^T
 Z = blkdiag(Zi, Zi, Zi);
 
@@ -82,34 +82,40 @@ Zx = kron(P, kron(M, Ndot));
 Zy = kron(P, kron(Mdot, N));
 Zz = kron(Pdot, kron(M, N));
 
+% This version minimizes the divergence and curl at the measurement
+% positions
 Q = [Zx, Zy, Zz; zeros(size(Zx)), -Zz, Zy; Zz, zeros(size(Zy)), -Zx; -Zy, Zx, zeros(size(Zz))];
+
+% This version minimizes the divergence at the measurement positions
 %Q = [Zx, Zy, Zz];
+
 D = reshape(values, size(values,1)*3, []);
-C_ = Zi \ values;
 
-C = quadprog(Z'*Z, -D'*Z, [], [], Q, zeros(size(Q,1),1));
-%C = quadprog(Z'*Z, -D'*Z);
+%C = quadprog(Z'*Z, -D'*Z, [], [], Q, zeros(size(Q,1),1));
 
-%% Check divergence
-temp = reshape(C, 5, 5, 5, 3);
-pp = fn2fm(spmak({k_n, k_m, k_p}, permute(temp, [4, 1, 2, 3])), 'pp');
+% This version ignores constraints altogether
+C = quadprog(Z'*Z, -D'*Z);
 
-dBdx = fnder(pp, [1,0,0]);
-dBdy = fnder(pp, [0,1,0]);
-dBdz = fnder(pp, [0,0,1]);
+% %% Check divergence
+% temp = reshape(C, 5, 5, 5, 3);
+% pp = fn2fm(spmak({k_n, k_m, k_p}, permute(temp, [4, 1, 2, 3])), 'pp');
+% 
+% dBdx = fnder(pp, [1,0,0]);
+% dBdy = fnder(pp, [0,1,0]);
+% dBdz = fnder(pp, [0,0,1]);
+% 
+% tempx = fnval(dBdx, nodes');
+% tempy = fnval(dBdy, nodes');
+% tempz = fnval(dBdz, nodes');
+% 
+% div = tempx(1,:) + tempy(2,:) + tempz(3,:);
+% 
+% fprintf('mean divergence: %s mT\n', 1000 * mean(div));
 
-tempx = fnval(dBdx, nodes');
-tempy = fnval(dBdy, nodes');
-tempz = fnval(dBdz, nodes');
-
-div = tempx(1,:) + tempy(2,:) + tempz(3,:);
-
-fprintf('mean divergence: %s mT\n', 1000 * mean(div));
-
-%% Check curl
-cx = tempz(2,:) - tempy(3,:);
-cy = tempx(3,:) - tempz(1,:);
-cz = tempy(1,:) - tempx(2,:);
+% %% Check curl
+% cx = tempz(2,:) - tempy(3,:);
+% cy = tempx(3,:) - tempz(1,:);
+% cz = tempy(1,:) - tempx(2,:);
 
 %% Compare
 
@@ -131,20 +137,27 @@ Zy = kron(P, kron(Mdot, N));
 Zz = kron(Pdot, kron(M, N));
 
 Q = [Zx, Zy, Zz];
-fprintf('mean divergence: %s mT/m\n', 1000*mean(Q * C));
-fprintf('max divergence: %s mT/m\n', 1000*max(Q * C));
+fprintf('divergence mean: %0.2f max: %0.2f (uT/m)\n', 1e6*mean(Q * C), 1e6*max(Q * C));
 
 Cx = [zeros(size(Zx)), -Zz, Zy];
 Cy = [Zz, zeros(size(Zy)), -Zx];
 Cz = [-Zy, Zx, zeros(size(Zz))];
-fprintf('mean curl magnitude %s mT/m\n', 1000*mean(sqrt(sum([Cx * C, Cy * C, Cz * C].^2, 2))));
-fprintf('max curl magnitude %s mT/m\n', 1000*max(sqrt(sum([Cx * C, Cy * C, Cz * C].^2, 2))));
-
-Z = kron(kron(N,M), P);
+fprintf('curl magnitude min: %0.2f max: %0.2f (uT/m)\n', ...
+    1e6*mean(sqrt(sum([Cx * C, Cy * C, Cz * C].^2, 2))), ...
+    1e6*max(sqrt(sum([Cx * C, Cy * C, Cz * C].^2, 2))));
+%Z = kron(kron(N,M), P);
+Z = kron(P, kron(M, N));
 interp = Z * reshape(C, size(values, 1), 3);
 
-fprintf('average error: %f mT\n', 1000 * mean(sqrt(sum((real - interp).^2, 2))));
-fprintf('median error: %f mT\n', 1000 * median(sqrt(sum((real - interp).^2, 2))));
+real_mag = sqrt(sum(real.^2, 2));
+interp_mag = sqrt(sum(interp.^2, 2));
+err_mag = sqrt(sum((real - interp).^2, 2));
+res_sos = sum((interp_mag - real_mag).^2);
+tot_sos = sum((interp_mag - mean(interp_mag)).^2);
+fprintf('R2: %0.3f, error: mean %0.2f, median %0.2f (uT)\n', ...
+    1 - res_sos / tot_sos, ...
+    1e6 * mean(err_mag), ...
+     1e6 * median(err_mag));
 
 figure;
 hold on;
