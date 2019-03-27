@@ -51,9 +51,19 @@ end
 
 % this gets the appropriate knot sequence that satisfies the
 % Schoenberg-Whitney condition
-k_n = aptknt(xv, dim);
-k_m = aptknt(yv, dim);
-k_p = aptknt(zv, dim);
+%k_n = aptknt(xv, dim);
+%k_m = aptknt(yv, dim);
+%k_p = aptknt(zv, dim);
+
+% number of knots (without multiplicities)
+nk = 4;
+
+k_n = augknt(linspace(xv(1), xv(end), nk), dim);
+k_m = augknt(linspace(yv(1), yv(end), nk), dim);
+k_p = augknt(linspace(zv(1), zv(end), nk), dim);
+
+% number of splines per dimension
+n = length(k_n) - dim;
 
 N = spcol(k_n, dim, xv);
 M = spcol(k_m, dim, yv);
@@ -91,10 +101,10 @@ Q = [Zx, Zy, Zz; zeros(size(Zx)), -Zz, Zy; Zz, zeros(size(Zy)), -Zx; -Zy, Zx, ze
 
 D = reshape(values, size(values,1)*3, []);
 
-%C = quadprog(Z'*Z, -D'*Z, [], [], Q, zeros(size(Q,1),1));
+C = quadprog(Z'*Z, -D'*Z, [], [], Q, zeros(size(Q,1),1));
 
 % This version ignores constraints altogether
-C = quadprog(Z'*Z, -D'*Z);
+%C = quadprog(Z'*Z, -D'*Z);
 
 % %% Check divergence
 % temp = reshape(C, 5, 5, 5, 3);
@@ -147,7 +157,7 @@ fprintf('curl magnitude min: %0.2f max: %0.2f (uT/m)\n', ...
     1e6*max(sqrt(sum([Cx * C, Cy * C, Cz * C].^2, 2))));
 %Z = kron(kron(N,M), P);
 Z = kron(P, kron(M, N));
-interp = Z * reshape(C, size(values, 1), 3);
+interp = Z * reshape(C, n*n*n, 3);
 
 real_mag = sqrt(sum(real.^2, 2));
 interp_mag = sqrt(sum(interp.^2, 2));

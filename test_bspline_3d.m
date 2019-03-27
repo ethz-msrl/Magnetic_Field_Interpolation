@@ -49,7 +49,7 @@ end
 %% Spline Fit
 
 D = 4; % degree of b-spline
-nk = 5;
+nk = nv;
 
 % this gets the appropriate knot sequence that satisfies the
 % Schoenberg-Whitney condition
@@ -86,15 +86,18 @@ hold off;
 %% Kernel size
 
 % we iterate the number of knots and see the average fit error
-nkv = 2:16;
+nkv = 2:12;
 avg_errors = zeros(size(nkv));
 
 for i = 1:length(nkv)
 
     nk = nkv(i);
-    k_n = aptknt(linspace(xv(1), xv(end), nk), D);
-    k_m = aptknt(linspace(yv(1), yv(end), nk), D);
-    k_p = aptknt(linspace(zv(1), zv(end), nk), D);
+%     k_n = aptknt(linspace(xv(1), xv(end), nk), D);
+%     k_m = aptknt(linspace(yv(1), yv(end), nk), D);
+%     k_p = aptknt(linspace(zv(1), zv(end), nk), D);
+    k_n = augknt(linspace(xv(1), xv(end), nk), D);
+    k_m = augknt(linspace(yv(1), yv(end), nk), D);
+    k_p = augknt(linspace(zv(1), zv(end), nk), D);
 
     N = spcol(k_n, D, xv);
     M = spcol(k_m, D, yv);
@@ -114,8 +117,7 @@ for i = 1:length(nkv)
 
 end
 
-
-plot(nkv, avg_errors);
+bar(nkv, avg_errors);
 
 %% Grid size
 nvv = 3:8;
@@ -169,4 +171,4 @@ for i = 1:length(nvv)
 end
 
 figure;
-plot(nvv, avg_errors);
+bar(nvv, avg_errors);
