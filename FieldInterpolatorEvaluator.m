@@ -47,12 +47,32 @@ classdef FieldInterpolatorEvaluator < handle
         
         function [r2] = get_r2(obj)
             % Gets the R2 score over the 3 dimensions
+            % Returns:
+            %   r2: a 3D array with an r2 score for each dimension
           
             nv = reshape(obj.NodeValues, [], 3);
             mu_nv = mean(nv, 1);
             ss_tot = sum((nv - mu_nv).^2, 1);
             ss_res = sum((nv - reshape(obj.FieldsPredicted, [], 3)).^2, 1);
             r2 = 1 - ss_res ./ ss_tot;
+        end
+        
+        function [rmse] = get_rmse(obj)
+            % Gets the RMSE score over the 3 dimensions
+            % Returns:
+            %   rmse: a 3D array with an rmse score in each dimension
+            nv = reshape(obj.NodeValues, [], 3);
+            nv_ = reshape(obj.FieldsPredicted, [], 3);
+            rmse = sqrt(mean((nv - nv_).^2,1));
+        end
+        
+        function [nmse] = get_nrmse(obj)
+            % Gets the RMSE normalized by the maximum field magnitude
+            
+            nv = reshape(obj.NodeValues, [], 3);
+            nv_ = reshape(obj.FieldsPredicted, [], 3);
+            rmse = sqrt(mean((nv - nv_).^2,1));
+            nmse = rmse ./ max(sqrt(sum(nv.^2, 2)));
         end
         
         function [fh] = plot_quiver_xy(obj, varargin)

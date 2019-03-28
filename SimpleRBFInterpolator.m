@@ -18,10 +18,10 @@ classdef SimpleRBFInterpolator < FieldInterpolator
             %           values (4D array): the field values at the node
             %           positions. The dimensions are Nx,Ny,Nz,3
             %           eps (float): the weighting term of the Gaussian RBF
-            obj.NodePositions = nodes;
-            obj.NodeValues = values;
+            obj.NodePositions = reshape(nodes, [], 3);
+            obj.NodeValues = reshape(values, [], 3);
             obj.Eps = eps;
-            obj.Coefs = get_rbf_coefficients(nodes, values, eps);
+            obj.Coefs = get_rbf_coefficients(obj.NodePositions, obj.NodeValues, eps);
         end
         
         function field = getFieldAtPosition(obj, position)
