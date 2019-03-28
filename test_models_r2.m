@@ -53,5 +53,25 @@ for i=1:NUM_CURRENTS
     r2_scores(i,:) = ev.get_r2();
 end
 
-disp('mean r2 scores:')
+disp('Simple RBF mean r2 scores:')
+disp(mean(r2_scores, 1));
+
+EPS = 21.;
+
+r2_scores = zeros(NUM_CURRENTS, 3);
+
+for i=1:NUM_CURRENTS
+    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields = permute(fields, [4, 3, 2, 1]);
+    
+    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+    
+    model = DivFreeRBFInterpolator(nodes, fields, EPS);
+    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+    
+    r2_scores(i,:) = ev.get_r2();
+end
+
+disp('Div-Free RBF mean r2 scores:')
 disp(mean(r2_scores, 1));
