@@ -1,6 +1,5 @@
 function [ C ] = get_rbf_coefficients( positions, values, eps )
-%GET_RBF_COEFFICIENTS Summary of this function goes here
-%   Detailed explanation goes here
+%GET_RBF_COEFFICIENTS Calculates the RBF coefficients for a 3D vector field
 
     Nd = length(positions);
     
