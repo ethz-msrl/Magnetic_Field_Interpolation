@@ -38,40 +38,59 @@ positions_ev = cat(4, xg_ev, yg_ev, zg_ev);
 NUM_CURRENTS = 50;
 EPS = 10.;
 
-r2_scores = zeros(NUM_CURRENTS, 3);
+% r2_scores = zeros(NUM_CURRENTS, 3);
+% 
+% for i=1:NUM_CURRENTS
+%     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields = permute(fields, [4, 3, 2, 1]);
+%     
+%     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+%     
+%     model = SimpleRBFInterpolator(nodes, fields, EPS);
+%     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+%     
+%     r2_scores(i,:) = ev.get_r2();
+% end
+% 
+% disp('Simple RBF mean r2 scores:')
+% disp(mean(r2_scores, 1));
+% 
+% EPS = 21.;
+% 
+% r2_scores = zeros(NUM_CURRENTS, 3);
+% 
+% for i=1:NUM_CURRENTS
+%     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields = permute(fields, [4, 3, 2, 1]);
+%     
+%     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+%     
+%     model = DivFreeRBFInterpolator(nodes, fields, EPS);
+%     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+%     
+%     r2_scores(i,:) = ev.get_r2();
+% end
+% 
+% disp('Div-Free RBF mean r2 scores:')
+% disp(mean(r2_scores, 1));
+
+[M, BFun, GFun] = get_tricubic_3d_matrix();
 
 for i=1:NUM_CURRENTS
+    disp(i);
     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
     fields = permute(fields, [4, 3, 2, 1]);
     
     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
     
-    model = SimpleRBFInterpolator(nodes, fields, EPS);
+    model = SimpleTricubicInterpolator(nodes, fields, M, BFun, GFun);
     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
     
     r2_scores(i,:) = ev.get_r2();
 end
 
-disp('Simple RBF mean r2 scores:')
-disp(mean(r2_scores, 1));
-
-EPS = 21.;
-
-r2_scores = zeros(NUM_CURRENTS, 3);
-
-for i=1:NUM_CURRENTS
-    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields = permute(fields, [4, 3, 2, 1]);
-    
-    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-    
-    model = DivFreeRBFInterpolator(nodes, fields, EPS);
-    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-    
-    r2_scores(i,:) = ev.get_r2();
-end
-
-disp('Div-Free RBF mean r2 scores:')
+disp('Simple tricubic scores:')
 disp(mean(r2_scores, 1));

@@ -12,6 +12,11 @@ classdef FieldInterpolator < handle
     end
     
     methods
+%         function obj = FieldInterpolator(nodes, values)
+%             obj.NodePositions = nodes;
+%             obj.NodeValues = values;
+%         end
+        
         % non vectorized function to get fields at several positions
         % override with better version if you can vectorize
         function fields = getFieldsAtPositions(obj, positions)
@@ -33,6 +38,10 @@ classdef FieldInterpolator < handle
             if numel(sz) ~= numel(size(positions))
                 fields = reshape(fields, sz);
             end
+        end
+        
+        function gradient = getGradientAtPosition(obj, position)
+            error('Not yet implemented');
         end
     end
     

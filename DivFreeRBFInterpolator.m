@@ -26,6 +26,11 @@ classdef DivFreeRBFInterpolator < FieldInterpolator
             field = evaluate_divfree_rbf(position, obj.NodePositions, ...
                 obj.Eps, obj.Coefs);
         end
+        
+        function gradient = getGradientAtPosition(obj, position)
+            gradient = evaluate_divfree_rbf_gradient(position, ...
+            obj.NodePositions, obj.Eps, obj.Coefs);
+        end
     end
     
 end
