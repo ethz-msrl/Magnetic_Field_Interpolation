@@ -24,7 +24,7 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
             obj.VG = padarray(vg, [2, 2, 2, 0], 'circular', 'both');
         end
         
-        function field = getFieldAtPosition(obj, position)
+        function [a_sol, x, y, z] = getCoefficients(obj, position)
             pn = getNormalizedPositions(obj,position);
             ix = floor(pn(1)) + 3; 
             iy = floor(pn(2)) + 3; 
@@ -111,9 +111,20 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
                 0.125 * (vg(ix+2, iy+2, iz+2, :) - vg(ix,   iy+2, iz+2, :)  - vg(ix+2, iy, iz+2)        + vg(ix, iy, iz+2, :)       - vg(ix+2, iy+2, iz)    + vg(ix,   iy+2, iz) + vg(ix+2, iy, iz)         -  vg(ix, iy, iz));
                 ]);
              a_sol = obj.M \ D;
-             field = [  obj.BFun(x, y, z, a_sol(:,1)'); ...
-                    obj.BFun(x, y, z, a_sol(:,2)'); ...
-                    obj.BFun(x, y, z, a_sol(:,3)')];
+        end
+        
+        function field = getFieldAtPosition(obj, position)
+            [a_sol, x, y, z] = obj.getCoefficients(position);
+            field = [  obj.BFun(x, y, z, a_sol(:,1)'); ...
+                obj.BFun(x, y, z, a_sol(:,2)'); ...
+                obj.BFun(x, y, z, a_sol(:,3)')];
+        end
+        
+        function gradient = getGradientAtPosition(obj, position)
+            [a_sol, x, y, z] = obj.getCoefficients(position);
+            gradient = [obj.GFun(x, y, z, a_sol(:,1)'), ...
+                obj.GFun(x, y, z, a_sol(:,2)'), ...
+                obj.GFun(x, y, z, a_sol(:,3)')];
         end
         
         function normalized = getNormalizedPositions(obj, positions)
