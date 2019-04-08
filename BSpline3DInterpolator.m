@@ -48,6 +48,28 @@ classdef BSpline3DInterpolator < FieldInterpolator
             field = (Z * obj.C)';
         end
         
+        function gradient = getGradientAtPosition(obj, position)
+            gradient = zeros(3,3);
+            N = spcol(obj.k_n, obj.D, brk2knt(position(1), 2));
+            M = spcol(obj.k_m, obj.D, position(2));
+            P = spcol(obj.k_p, obj.D, position(3));
+            Z = kron(kron(N, M), P);
+            temp = Z * obj.C;
+            gradient(:,1) = temp(2:2:end,:);
+            N = spcol(obj.k_n, obj.D, position(1));
+            M = spcol(obj.k_m, obj.D, brk2knt(position(2), 2));
+            P = spcol(obj.k_p, obj.D, position(3));
+            Z = kron(kron(N, M), P);
+            temp = Z * obj.C;
+            gradient(:,2) = temp(2:2:end,:);
+            N = spcol(obj.k_n, obj.D, position(1));
+            M = spcol(obj.k_m, obj.D, position(2));
+            P = spcol(obj.k_p, obj.D, brk2knt(position(3), 2));
+            Z = kron(kron(N, M), P);
+            temp = Z * obj.C;
+            gradient(:,3) = temp(2:2:end,:);
+        end
+        
         function fields = getFieldsAtPositions(obj, positions)
             % get fields at grid positions
             % positions is assumed to be a 4D array of size Nx, Ny, Nz, 3

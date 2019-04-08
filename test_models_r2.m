@@ -83,7 +83,7 @@ for i=1:NUM_CURRENTS
     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
     
-    model = BSpline3DInterpolator(nodes, fields, 3);
+    model = BSpline3DInterpolator(nodes, fields, 4);
     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
     
     r2_scores(i,:) = ev.get_r2();
