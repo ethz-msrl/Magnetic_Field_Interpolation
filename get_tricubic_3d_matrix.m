@@ -21,7 +21,7 @@ function [M, B_fun, G_fun] = get_tricubic_3d_matrix()
     %   interpolation with a vector of coefficients
 
     syms x y z
-    A = sym('a%d%d%d', [4, 4, 4]);
+    A = sym('a%d%d%d', [4, 4, 4], 'real');
     av = reshape(A, 1, []);
 
     tri_fun = symfun(tricubic(A, x, y, z), [x y z]);

@@ -10,13 +10,11 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = SimpleTricubicInterpolator(nodes, values, M, BFun , GFun)
+        function obj = SimpleTricubicInterpolator(nodes, values, M)
             obj.NodePositions = nodes;
             obj.NodeValues = values;
             %[obj.M, obj.BFun, obj.GFun] = get_tricubic_3d_matrix();
             obj.M = M;
-            obj.BFun = BFun;
-            obj.GFun = GFun;
             % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
             vg = obj.NodeValues;
             vg = permute(vg, [3,2,1,4]);
@@ -24,7 +22,7 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
             obj.VG = padarray(vg, [2, 2, 2, 0], 'circular', 'both');
         end
         
-        function [a_sol, x, y, z] = getCoefficients(obj, position)
+        function [A_sol, x, y, z] = getCoefficients(obj, position)
             pn = getNormalizedPositions(obj,position);
             ix = floor(pn(1)) + 3; 
             iy = floor(pn(2)) + 3; 
@@ -111,20 +109,25 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
                 0.125 * (vg(ix+2, iy+2, iz+2, :) - vg(ix,   iy+2, iz+2, :)  - vg(ix+2, iy, iz+2)        + vg(ix, iy, iz+2, :)       - vg(ix+2, iy+2, iz)    + vg(ix,   iy+2, iz) + vg(ix+2, iy, iz)         -  vg(ix, iy, iz));
                 ]);
              a_sol = obj.M \ D;
+             A_sol = reshape(a_sol, [4,4,4,3]);
         end
         
         function field = getFieldAtPosition(obj, position)
-            [a_sol, x, y, z] = obj.getCoefficients(position);
-            field = [  obj.BFun(x, y, z, a_sol(:,1)'); ...
-                obj.BFun(x, y, z, a_sol(:,2)'); ...
-                obj.BFun(x, y, z, a_sol(:,3)')];
+            [A_sol, xe, ye, ze] = obj.getCoefficients(position);
+            field = [
+                tricubic_num(A_sol(:,:,:,1), xe, ye, ze);
+                tricubic_num(A_sol(:,:,:,2), xe, ye, ze);
+                tricubic_num(A_sol(:,:,:,3), xe, ye, ze);
+                ];
+
         end
         
         function gradient = getGradientAtPosition(obj, position)
-            [a_sol, x, y, z] = obj.getCoefficients(position);
-            gradient = [obj.GFun(x, y, z, a_sol(:,1)'), ...
-                obj.GFun(x, y, z, a_sol(:,2)'), ...
-                obj.GFun(x, y, z, a_sol(:,3)')];
+            [A_sol, x, y, z] = obj.getCoefficients(position);
+            dBx = tricubic_grad_num(A_sol(:,:,:,1), x, y, z)';
+            dBy = tricubic_grad_num(A_sol(:,:,:,2), x, y, z)';
+            dBz = tricubic_grad_num(A_sol(:,:,:,3), x, y, z)';
+            gradient = [dBx; dBy; dBz];
         end
         
         function normalized = getNormalizedPositions(obj, positions)
