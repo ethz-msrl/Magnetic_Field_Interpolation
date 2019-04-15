@@ -1,35 +1,18 @@
-function [ y ] = tricubic_grad( av, x, y, z )
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
-sumx = 0;
-sumy = 0;
-sumz = 0;
+function [ grad ] = tricubic_grad( A, x, y, z )
+%TRICUBICGRAD Calculates the gradient of a tricubic function
+%   Computes the gradient of tricubic numerically.
+xv = kron(kron([3*x^2, 2*x, 1, 0], [y^3, y^2, y, 1]), [z^3, z^2, z, 1])';
+yv = kron(kron([x^3, x^2, x, 1], [3*y^2, 2*y, 1, 0]), [z^2, z^2, z, 1])';
+zv = kron(kron([x^3, x^2, x, 1], [y^3, y^2, y, 1]), [3*z^2, 2*z, 1, 0])';
 
-ind = 1;
-for i = 0:3
-    for j=0:3
-        for k=0:3
-            if (i == 0) && (j == 0) && (k==0)
-                continue
-            end
+% av is the vector arrangement of A which is 4x4x4
+% this ensures that the ordering of the parameters of av matches xv
+av = flip(reshape(permute(A, [3,2,1]), [], 1));
 
-            if (i > 0)
-                sumx = sumx + i * av(ind) * x^(i-1) * y^j * z^k;
-            end
-            
-            if (j > 0)
-                sumy = sumy + j * av(ind) * x^i * y^(j-1) * z^k;
-            end
-            if (k > 0)
-                sumz = sumz + k * av(ind) * x^i * y^j * z^(k-1);
-            end
-            
-            ind = ind + 1;
-        end
-    end
-end
-
-y = [sumx; sumy; sumz];
-
+grad = [
+    sum(av .* xv);
+    sum(av .* yv);
+    sum(av .* zv);
+    ];
 end
 

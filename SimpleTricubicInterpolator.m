@@ -115,18 +115,18 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
         function field = getFieldAtPosition(obj, position)
             [A_sol, xe, ye, ze] = obj.getCoefficients(position);
             field = [
-                tricubic_num(A_sol(:,:,:,1), xe, ye, ze);
-                tricubic_num(A_sol(:,:,:,2), xe, ye, ze);
-                tricubic_num(A_sol(:,:,:,3), xe, ye, ze);
+                tricubic(A_sol(:,:,:,1), xe, ye, ze);
+                tricubic(A_sol(:,:,:,2), xe, ye, ze);
+                tricubic(A_sol(:,:,:,3), xe, ye, ze);
                 ];
 
         end
         
         function gradient = getGradientAtPosition(obj, position)
             [A_sol, x, y, z] = obj.getCoefficients(position);
-            dBx = tricubic_grad_num(A_sol(:,:,:,1), x, y, z)';
-            dBy = tricubic_grad_num(A_sol(:,:,:,2), x, y, z)';
-            dBz = tricubic_grad_num(A_sol(:,:,:,3), x, y, z)';
+            dBx = tricubic_grad(A_sol(:,:,:,1), x, y, z)';
+            dBy = tricubic_grad(A_sol(:,:,:,2), x, y, z)';
+            dBz = tricubic_grad(A_sol(:,:,:,3), x, y, z)';
             gradient = [dBx; dBy; dBz];
         end
         

@@ -10,13 +10,10 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = TricubicScalarFieldInterpolator(nodes, values, M, BFun)
+        function obj = TricubicScalarFieldInterpolator(nodes, values, M)
             obj.NodePositions = nodes;
             obj.NodeValues = values;
-            %[obj.M, obj.BFun, obj.GFun] = get_tricubic_3d_matrix();
             obj.M = M;
-            obj.BFun = BFun;
-            %obj.GFun = GFun;
             % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
             vg = obj.NodeValues;
             vg = permute(vg, [3,2,1,4]);
@@ -90,7 +87,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
            [a_sol, xe, ye, ze] = obj.getCoefficients(position);
             a_sol = [0; a_sol];
             A_sol = reshape(a_sol, [4 4 4]);
-            field = -tricubic_grad_num(A_sol, xe, ye, ze);
+            field = -tricubic_grad(A_sol, xe, ye, ze);
         end
         
 %         function gradient = getGradientAtPosition(obj, position)
