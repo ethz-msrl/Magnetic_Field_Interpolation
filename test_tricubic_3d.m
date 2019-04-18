@@ -67,20 +67,13 @@ zd = reshape(zd, [], 1);
 % 
 interp = zeros(length(xd), 3);
 
-
 vg = reshape(values, [Nx, Ny, Nz, 3]);
-% we padd the array so we can do i+1 on the right border
-vg = padarray(vg, [1, 1, 1, 0], 'circular', 'post');
 
-dvg_dx = diff(vg, 1, 1);
-dvg_dy = diff(vg, 1, 2);
-dvg_dz = diff(vg, 1, 3);
+[dvg_dy, dvg_dx, vg_dz] = gradient(vg);
+[dvg_dxy, ~, dvg_dxz] = gradient(dvg_dx);
+[~,~,dvg_dyz] = gradient(dvg_dy);
+[~,~,dvg_dxyz] = gradient(dvg_dxy);
 
-dvg_dxy = diff(dvg_dx, 1, 2);
-dvg_dxz = diff(dvg_dx, 1, 3);
-dvg_dyz = diff(dvg_dy, 1, 3);
-
-dvg_dxyz = diff(dvg_dxy, 1, 3);
 
 for i = 1:length(xd)
 
@@ -166,13 +159,9 @@ for i = 1:length(xd)
         dvg_dxyz(ix+1, iy+1, iz, :);
         dvg_dxyz(ix+1, iy+1, iz+1, :);
      ]);
+ 
+    a_sol = M \ D;
 
-    if (ix < 4 && iy < 4 && iz < 4)
-        a_sol = M \ D;
-    else
-        a_sol = M(1:8,:) \ D(1:8, :);
-    end
-    
      interp(i, :) = [  B_fun(x, y, z, a_sol(:,1)'), ...
             B_fun(x, y, z, a_sol(:,2)'), ...
             B_fun(x, y, z, a_sol(:,3)')];
