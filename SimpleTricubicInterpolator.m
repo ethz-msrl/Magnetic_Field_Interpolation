@@ -4,8 +4,6 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
     
     properties (SetAccess = private)
         M
-        BFun
-        GFun
         VG
         Nx
         Ny
@@ -27,7 +25,6 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
             obj.Nx = size(obj.NodePositions, 1);
             obj.Ny = size(obj.NodePositions, 2);
             obj.Nz = size(obj.NodePositions, 3);
-            %[obj.M, obj.BFun, obj.GFun] = get_tricubic_3d_matrix();
             obj.M = M;
             % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
             vg = obj.NodeValues;

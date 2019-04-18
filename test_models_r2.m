@@ -109,28 +109,7 @@ r2_scores = zeros(NUM_CURRENTS, 3);
 % disp(mean(r2_scores, 1));
 
 %[M] = get_tricubic_3d_matrix();
-load('tricubic_simple_M.mat', 'M');
-
-for i=1:NUM_CURRENTS
-    disp(i);
-    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields = permute(fields, [4, 3, 2, 1]);
-    
-    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-    
-    model = SimpleTricubicInterpolator(nodes, fields, M);
-    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-    
-    r2 = ev.get_r2();
-    disp(r2);
-    r2_scores(i,:) = r2;
-end
-
-disp('Simple tricubic scores:')
-disp(mean(r2_scores, 1));
-
-% M = get_tricubic_scalar_field_matrix();
+% load('tricubic_simple_M.mat', 'M');
 % 
 % for i=1:NUM_CURRENTS
 %     disp(i);
@@ -140,7 +119,7 @@ disp(mean(r2_scores, 1));
 %     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
 %     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 %     
-%     model = TricubicScalarFieldInterpolator(nodes, fields, M);
+%     model = SimpleTricubicInterpolator(nodes, fields, M);
 %     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
 %     
 %     r2 = ev.get_r2();
@@ -148,5 +127,27 @@ disp(mean(r2_scores, 1));
 %     r2_scores(i,:) = r2;
 % end
 % 
-% disp('Tricubic scalar field scores:')
+% disp('Simple tricubic scores:')
 % disp(mean(r2_scores, 1));
+
+%M = get_tricubic_scalar_field_matrix();
+load('tricubic_scalar_field_matrix.mat', 'M');
+
+for i=1:NUM_CURRENTS
+    disp(i);
+    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields = permute(fields, [4, 3, 2, 1]);
+    
+    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+    
+    model = TricubicScalarFieldInterpolator(nodes, fields, M);
+    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+    
+    r2 = ev.get_r2();
+    disp(r2);
+    r2_scores(i,:) = r2;
+end
+
+disp('Tricubic scalar field scores:')
+disp(mean(r2_scores, 1));
