@@ -7,113 +7,142 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
         BFun
         GFun
         VG
+        Nx
+        Ny
+        Nz
+        dvg_dx
+        dvg_dy
+        dvg_dz
+        dvg_dxy
+        dvg_dxz
+        dvg_dyz
+        dvg_dxyz
+        Coefs
     end
     
     methods
         function obj = SimpleTricubicInterpolator(nodes, values, M)
             obj.NodePositions = nodes;
             obj.NodeValues = values;
+            obj.Nx = size(obj.NodePositions, 1);
+            obj.Ny = size(obj.NodePositions, 2);
+            obj.Nz = size(obj.NodePositions, 3);
             %[obj.M, obj.BFun, obj.GFun] = get_tricubic_3d_matrix();
             obj.M = M;
             % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
             vg = obj.NodeValues;
-            vg = permute(vg, [3,2,1,4]);
-            % we pad the array so we can do i-1 and i+2 on the borders
-            obj.VG = padarray(vg, [2, 2, 2, 0], 'circular', 'both');
+            obj.VG = permute(vg, [3,2,1,4]);
+            [obj.dvg_dy, obj.dvg_dx, obj.dvg_dz] = gradient(obj.VG);
+            [obj.dvg_dxy, ~, obj.dvg_dxz] = gradient(obj.dvg_dx);
+            [~,~,obj.dvg_dyz] = gradient(obj.dvg_dy);
+            [~,~,obj.dvg_dxyz] = gradient(obj.dvg_dxy);
+            
+            getAllCoefficients(obj);
         end
         
-        function [A_sol, x, y, z] = getCoefficients(obj, position)
-            pn = getNormalizedPositions(obj,position);
-            ix = floor(pn(1)) + 3; 
-            iy = floor(pn(2)) + 3; 
-            iz = floor(pn(3)) + 3;
-            
-            x = pn(1) + 3 - ix;
-            y = pn(2) + 3 - iy;
-            z = pn(3) + 3 - iz;
-            
-            vg = obj.VG;
+        function getAllCoefficients(obj)
+            obj.Coefs = zeros(obj.Nx-1, obj.Ny-1, obj.Nz-1, 64, 3);
+            for ix = 1:(obj.Nx-1)
+                for iy = 1:(obj.Ny-1)
+                    for iz = 1:(obj.Nz-1)
+                        D = squeeze([
+                            % f
+                            obj.VG(ix, iy, iz, :);
+                            obj.VG(ix, iy, iz+1, :);
+                            obj.VG(ix, iy+1, iz, :);
+                            obj.VG(ix, iy+1, iz+1, :);
+                            obj.VG(ix+1, iy, iz, :);
+                            obj.VG(ix+1, iy, iz+1, :);
+                            obj.VG(ix+1, iy+1, iz, :);
+                            obj.VG(ix+1, iy+1, iz+1, :);
+                            % df/dx
+                            obj.dvg_dx(ix, iy, iz, :);
+                            obj.dvg_dx(ix, iy, iz+1, :);
+                            obj.dvg_dx(ix, iy+1, iz, :);
+                            obj.dvg_dx(ix, iy+1, iz+1, :);
+                            obj.dvg_dx(ix+1, iy, iz, :);
+                            obj.dvg_dx(ix+1, iy, iz+1, :);
+                            obj.dvg_dx(ix+1, iy+1, iz, :);
+                            obj.dvg_dx(ix+1, iy+1, iz+1, :);
+                            % df/dy
+                            obj.dvg_dy(ix, iy, iz, :);
+                            obj.dvg_dy(ix, iy, iz+1, :);
+                            obj.dvg_dy(ix, iy+1, iz, :);
+                            obj.dvg_dy(ix, iy+1, iz+1, :);
+                            obj.dvg_dy(ix+1, iy, iz, :);
+                            obj.dvg_dy(ix+1, iy, iz+1, :);
+                            obj.dvg_dy(ix+1, iy+1, iz, :);
+                            obj.dvg_dy(ix+1, iy+1, iz+1, :);
+                            % df/dz
+                            obj.dvg_dz(ix, iy, iz, :);
+                            obj.dvg_dz(ix, iy, iz+1, :);
+                            obj.dvg_dz(ix, iy+1, iz, :);
+                            obj.dvg_dz(ix, iy+1, iz+1, :);
+                            obj.dvg_dz(ix+1, iy, iz, :);
+                            obj.dvg_dz(ix+1, iy, iz+1, :);
+                            obj.dvg_dz(ix+1, iy+1, iz, :);
+                            obj.dvg_dz(ix+1, iy+1, iz+1, :);
+                            % d2f/dxdy
+                            obj.dvg_dxy(ix, iy, iz, :);
+                            obj.dvg_dxy(ix, iy, iz+1, :);
+                            obj.dvg_dxy(ix, iy+1, iz, :);
+                            obj.dvg_dxy(ix, iy+1, iz+1, :);
+                            obj.dvg_dxy(ix+1, iy, iz, :);
+                            obj.dvg_dxy(ix+1, iy, iz+1, :);
+                            obj.dvg_dxy(ix+1, iy+1, iz, :);
+                            obj.dvg_dxy(ix+1, iy+1, iz+1, :);
+                            % d2f/dxdz
+                            obj.dvg_dxz(ix, iy, iz, :);
+                            obj.dvg_dxz(ix, iy, iz+1, :);
+                            obj.dvg_dxz(ix, iy+1, iz, :);
+                            obj.dvg_dxz(ix, iy+1, iz+1, :);
+                            obj.dvg_dxz(ix+1, iy, iz, :);
+                            obj.dvg_dxz(ix+1, iy, iz+1, :);
+                            obj.dvg_dxz(ix+1, iy+1, iz, :);
+                            obj.dvg_dxz(ix+1, iy+1, iz+1, :);
+                            % d2f/dydz
+                            obj.dvg_dyz(ix, iy, iz, :);
+                            obj.dvg_dyz(ix, iy, iz+1, :);
+                            obj.dvg_dyz(ix, iy+1, iz, :);
+                            obj.dvg_dyz(ix, iy+1, iz+1, :);
+                            obj.dvg_dyz(ix+1, iy, iz, :);
+                            obj.dvg_dyz(ix+1, iy, iz+1, :);
+                            obj.dvg_dyz(ix+1, iy+1, iz, :);
+                            obj.dvg_dyz(ix+1, iy+1, iz+1, :);
+                            % d3f/dxdydz
+                            obj.dvg_dxyz(ix, iy, iz, :);
+                            obj.dvg_dxyz(ix, iy, iz+1, :);
+                            obj.dvg_dxyz(ix, iy+1, iz, :);
+                            obj.dvg_dxyz(ix, iy+1, iz+1, :);
+                            obj.dvg_dxyz(ix+1, iy, iz, :);
+                            obj.dvg_dxyz(ix+1, iy, iz+1, :);
+                            obj.dvg_dxyz(ix+1, iy+1, iz, :);
+                            obj.dvg_dxyz(ix+1, iy+1, iz+1, :);
+                            ]);
 
-            D = squeeze([
-            % f
-                vg(ix, iy, iz, :);
-                vg(ix, iy, iz+1, :);
-                vg(ix, iy+1, iz, :);
-                vg(ix, iy+1, iz+1, :);
-                vg(ix+1, iy, iz, :);
-                vg(ix+1, iy, iz+1, :);
-                vg(ix+1, iy+1, iz, :);
-                vg(ix+1, iy+1, iz+1, :);
-            % df/dx
-                0.5 * (vg(ix+1, iy, iz, :)       - vg(ix-1, iy, iz, :));
-                0.5 * (vg(ix+1, iy, iz+1, :)     - vg(ix-1, iy, iz+1, :));
-                0.5 * (vg(ix+1, iy+1, iz, :)     - vg(ix-1, iy+1, iz, :));
-                0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix-1, iy+1, iz+1, :));
-                0.5 * (vg(ix+2, iy, iz, :)       - vg(ix, iy, iz, :));
-                0.5 * (vg(ix+2, iy, iz+1, :)     - vg(ix, iy, iz+1, :));
-                0.5 * (vg(ix+2, iy+1, iz, :)     - vg(ix, iy+1, iz, :));
-                0.5 * (vg(ix+2, iy+1, iz+1, :)   - vg(ix, iy+1, iz+1, :));
-            % df/dy
-                0.5 * (vg(ix, iy+1, iz, :)       - vg(ix, iy-1, iz, :));
-                0.5 * (vg(ix, iy+1, iz+1, :)     - vg(ix, iy-1, iz+1, :));
-                0.5 * (vg(ix, iy+2, iz, :)       - vg(ix, iy, iz, :));
-                0.5 * (vg(ix, iy+2, iz+1, :)     - vg(ix, iy, iz+1, :));
-                0.5 * (vg(ix+1, iy+1, iz, :)     - vg(ix+1, iy-1, iz, :));
-                0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix+1, iy-1, iz+1, :));
-                0.5 * (vg(ix+1, iy+2, iz, :)     - vg(ix+1, iy, iz, :));
-                0.5 * (vg(ix+1, iy+2, iz+1, :)   - vg(ix+1, iy, iz+1, :));
-            % df/dz
-                0.5 * (vg(ix, iy, iz+1, :)       - vg(ix, iy, iz-1, :));
-                0.5 * (vg(ix, iy, iz+2, :)       - vg(ix, iy, iz, :));
-                0.5 * (vg(ix, iy+1, iz+1, :)     - vg(ix, iy+1, iz-1, :));
-                0.5 * (vg(ix, iy+1, iz+2, :)     - vg(ix, iy+1, iz, :));
-                0.5 * (vg(ix+1, iy, iz+1, :)     - vg(ix+1, iy, iz-1, :));
-                0.5 * (vg(ix+1, iy, iz+2, :)     - vg(ix+1, iy, iz, :));
-                0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix+1, iy+1, iz-1, :));
-                0.5 * (vg(ix+1, iy+1, iz+2, :)   - vg(ix+1, iy+1, iz, :));
-            % d2f/dxdy
-                0.25 * (vg(ix+1, iy+1, iz, :)    - vg(ix-1, iy+1, iz, :)    - vg(ix+1, iy - 1, iz)      + vg(ix-1, iy-1, iz));
-                0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy - 1, iz+1)    + vg(ix-1, iy-1, iz+1));
-                0.25 * (vg(ix+1, iy+2, iz, :)    - vg(ix-1, iy+2, iz, :)    - vg(ix+1, iy, iz)          + vg(ix-1, iy, iz));
-                0.25 * (vg(ix+1, iy+2, iz+1, :)  - vg(ix-1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1)        + vg(ix-1, iy, iz+1));
-                0.25 * (vg(ix+2, iy+1, iz, :)    - vg(ix, iy+1, iz, :)      - vg(ix+2, iy - 1, iz)      + vg(ix, iy-1, iz));
-                0.25 * (vg(ix+2, iy+1, iz+1, :)  - vg(ix, iy+1, iz+1, :)    - vg(ix+2, iy - 1, iz+1)    + vg(ix, iy-1, iz+1));
-                0.25 * (vg(ix+2, iy+2, iz, :)    - vg(ix, iy+2, iz, :)      - vg(ix+2, iy, iz)          + vg(ix, iy, iz));
-                0.25 * (vg(ix+2, iy+2, iz+1, :)  - vg(ix, iy+2, iz+1, :)    - vg(ix+2, iy, iz+1)        + vg(ix, iy, iz+1));
-            % d2f/dxdz
-                0.25 * (vg(ix+1, iy, iz+1, :)    - vg(ix-1, iy, iz+1, :)    - vg(ix+1, iy - 1, iz-1)    + vg(ix-1, iy, iz-1));
-                0.25 * (vg(ix+1, iy, iz+2, :)    - vg(ix-1, iy, iz+2, :)    - vg(ix+1, iy - 1, iz)      + vg(ix-1, iy, iz));
-                0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy, iz-1)        + vg(ix-1, iy+1, iz-1));
-                0.25 * (vg(ix+1, iy+1, iz+2, :)  - vg(ix-1, iy+1, iz+2, :)  - vg(ix+1, iy, iz)          + vg(ix-1, iy+1, iz));
-                0.25 * (vg(ix+2, iy, iz+1, :)    - vg(ix, iy, iz+1, :)      - vg(ix+2, iy - 1, iz-1)    + vg(ix, iy, iz-1));
-                0.25 * (vg(ix+2, iy, iz+2, :)    - vg(ix, iy, iz+2, :)      - vg(ix+2, iy - 1, iz)      + vg(ix, iy, iz));
-                0.25 * (vg(ix+2, iy+1, iz+1, :)  - vg(ix, iy+1, iz+1, :)    - vg(ix+2, iy, iz-1)        + vg(ix, iy+1, iz-1));
-                0.25 * (vg(ix+2, iy+1, iz+2, :)  - vg(ix, iy+1, iz+2, :)    - vg(ix+2, iy, iz)          + vg(ix, iy+1, iz));
-            % d2f/dydz
-                0.25 * (vg(ix, iy+1, iz+1, :)    - vg(ix, iy-1, iz+1, :)    - vg(ix, iy+1, iz-1)        + vg(ix, iy-1, iz-1));
-                0.25 * (vg(ix, iy+1, iz+2, :)    - vg(ix, iy-1, iz+2, :)    - vg(ix, iy+1, iz)     + vg(ix, iy-1, iz));
-                0.25 * (vg(ix, iy+2, iz+1, :)    - vg(ix, iy, iz+1, :)      - vg(ix, iy+2, iz-1)        + vg(ix, iy, iz-1));
-                0.25 * (vg(ix, iy+2, iz+2, :)    - vg(ix, iy, iz+2, :)      - vg(ix, iy+2, iz)          + vg(ix, iy, iz));
-                0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix+1, iy-1, iz+1, :)  - vg(ix+1, iy+1, iz-1)      + vg(ix+1, iy-1, iz-1));
-                0.25 * (vg(ix+1, iy+1, iz+2, :)  - vg(ix+1, iy-1, iz+2, :)  - vg(ix+1, iy+1, iz)        + vg(ix+1, iy-1, iz));
-                0.25 * (vg(ix+1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1, :)    - vg(ix+1, iy+2, iz-1)      + vg(ix+1, iy, iz-1));
-                0.25 * (vg(ix+1, iy+2, iz+2, :)  - vg(ix+1, iy, iz+2, :)    - vg(ix+1, iy+2, iz)        + vg(ix+1, iy, iz));
-            % d3f/dxdydz
-                0.125 * (vg(ix+1, iy+1, iz+1, :) - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy-1, iz+1)      + vg(ix-1, iy-1, iz+1, :)   - vg(ix+1, iy+1, iz-1)  + vg(ix-1, iy+1, iz-1) + vg(ix+1, iy-1, iz-1)   -  vg(ix-1, iy-1, iz-1));
-                0.125 * (vg(ix+1, iy+1, iz+2, :) - vg(ix-1, iy+1, iz+2, :)  - vg(ix+1, iy-1, iz+2)      + vg(ix-1, iy-1, iz+2, :)   - vg(ix+1, iy+1, iz)    + vg(ix-1, iy+1, iz) + vg(ix+1, iy-1, iz)       -  vg(ix-1, iy-1, iz));
-                0.125 * (vg(ix+1, iy+2, iz+1, :) - vg(ix-1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1)        + vg(ix-1, iy, iz+1, :)     - vg(ix+1, iy+2, iz-1)  + vg(ix-1, iy+2, iz-1) + vg(ix+1, iy, iz-1)     -  vg(ix-1, iy, iz-1));
-                0.125 * (vg(ix+1, iy+2, iz+2, :) - vg(ix-1, iy+2, iz+2, :)  - vg(ix+1, iy, iz+2)        + vg(ix-1, iy, iz+2, :)     - vg(ix+1, iy+2, iz)    + vg(ix-1, iy+2, iz) + vg(ix+1, iy, iz)         -  vg(ix-1, iy, iz));
-                0.125 * (vg(ix+2, iy+1, iz+1, :) - vg(ix,   iy+1, iz+1, :)  - vg(ix+2, iy-1, iz+1)      + vg(ix, iy-1, iz+1, :)     - vg(ix+2, iy+1, iz-1)  + vg(ix,   iy+1, iz-1) + vg(ix+2, iy-1, iz-1)   -  vg(ix, iy-1, iz-1));
-                0.125 * (vg(ix+2, iy+1, iz+2, :) - vg(ix,   iy+1, iz+2, :)  - vg(ix+2, iy-1, iz+2)      + vg(ix, iy-1, iz+2, :)     - vg(ix+2, iy+1, iz)    + vg(ix,   iy+1, iz) + vg(ix+2, iy-1, iz)       -  vg(ix, iy-1, iz));
-                0.125 * (vg(ix+2, iy+2, iz+1, :) - vg(ix,   iy+2, iz+1, :)  - vg(ix+2, iy, iz+1)        + vg(ix, iy, iz+1, :)       - vg(ix+2, iy+2, iz-1)  + vg(ix,   iy+2, iz-1) + vg(ix+2, iy, iz-1)     -  vg(ix, iy, iz-1));
-                0.125 * (vg(ix+2, iy+2, iz+2, :) - vg(ix,   iy+2, iz+2, :)  - vg(ix+2, iy, iz+2)        + vg(ix, iy, iz+2, :)       - vg(ix+2, iy+2, iz)    + vg(ix,   iy+2, iz) + vg(ix+2, iy, iz)         -  vg(ix, iy, iz));
-                ]);
-             a_sol = obj.M \ D;
-             A_sol = reshape(a_sol, [4,4,4,3]);
+                        %a_sol = obj.M(1:8, :) \ D(1:8,:);
+                        a_sol = obj.M \ D;
+                        obj.Coefs(ix, iy, iz, :, :) = a_sol;
+                    end
+                end
+            end
+        end
+        
+        function [ix, iy, iz, x, y, z] = getIndices(obj, position)
+            pn = getNormalizedPositions(obj, position);
+            
+            ix = min(floor(pn(1)) + 1, size(obj.NodePositions, 1) - 1);
+            iy = min(floor(pn(2)) + 1, size(obj.NodePositions, 2) - 1);
+            iz = min(floor(pn(3)) + 1, size(obj.NodePositions, 3) - 1);
+            
+            x = pn(1) + 1 - ix;
+            y = pn(2) + 1 - iy;
+            z = pn(3) + 1 - iz;
         end
         
         function field = getFieldAtPosition(obj, position)
-            [A_sol, xe, ye, ze] = obj.getCoefficients(position);
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4, 3]);
             field = [
                 tricubic(A_sol(:,:,:,1), xe, ye, ze);
                 tricubic(A_sol(:,:,:,2), xe, ye, ze);

@@ -1,8 +1,8 @@
-xv = linspace(-0.0525, 0.0525, 5);
+xv = linspace(-0.0525, 0.0525, 4);
 xstep = (xv(end) - xv(1)) / (length(xv) - 1);
-yv = linspace(-0.04, 0.04, 5);
+yv = linspace(-0.04, 0.04, 4);
 ystep = (yv(end) - yv(1)) / (length(yv) - 1);
-zv = linspace(-0.0475, 0.0875, 5);
+zv = linspace(-0.0475, 0.0875, 4);
 zstep = (zv(end) - zv(1)) / (length(zv) - 1);
 
 Nx = length(xv);
@@ -69,11 +69,10 @@ interp = zeros(length(xd), 3);
 
 vg = reshape(values, [Nx, Ny, Nz, 3]);
 
-[dvg_dy, dvg_dx, vg_dz] = gradient(vg);
+[dvg_dy, dvg_dx, dvg_dz] = gradient(vg);
 [dvg_dxy, ~, dvg_dxz] = gradient(dvg_dx);
 [~,~,dvg_dyz] = gradient(dvg_dy);
 [~,~,dvg_dxyz] = gradient(dvg_dxy);
-
 
 for i = 1:length(xd)
 
@@ -160,9 +159,10 @@ for i = 1:length(xd)
         dvg_dxyz(ix+1, iy+1, iz+1, :);
      ]);
  
+    %a_sol = M(1:8,:) \ D(1:8,:);
     a_sol = M \ D;
 
-     interp(i, :) = [  B_fun(x, y, z, a_sol(:,1)'), ...
+    interp(i, :) = [  B_fun(x, y, z, a_sol(:,1)'), ...
             B_fun(x, y, z, a_sol(:,2)'), ...
             B_fun(x, y, z, a_sol(:,3)')];
 end
