@@ -5,6 +5,10 @@ ystep = (yv(end) - yv(1)) / (length(yv) - 1);
 zv = linspace(-0.0475, 0.0875, 5);
 zstep = (zv(end) - zv(1)) / (length(zv) - 1);
 
+Nx = length(xv);
+Ny = length(yv);
+Nz = length(zv);
+
 [xd, yd, zd] = ndgrid(xv, yv, zv);
 
 xd = xd(:);
@@ -16,10 +20,14 @@ nodes = [xd, yd, zd];
 currents = [-1.963839324961165,-8.480666166183163,-5.201676928926839,-7.533621303296689,-6.321844234351666,-5.200949486701944,-1.654658618312610,-9.006911393485158, 1]';
 
 values = zeros(length(xd), 3);
+grad = zeros(length(xd), 5);
 for i = 1:length(xd)
     BG = cmag.FieldAndGradient(nodes(i,:), currents);
     values(i, :) = BG(1:3);
+    grad(i,:) = BG(4:end);
 end
+
+grad = reshape(grad, [Nx, Ny, Nz, 5]);
 
 [M, B_fun, G_fun] = get_tricubic_3d_matrix();
 
@@ -39,10 +47,13 @@ yd = reshape(yd, [], 1);
 zd = reshape(zd, [], 1);
 
 real = zeros(length(xd), 3);
+
 for i = 1:length(xd)
     BG = cmag.FieldAndGradient([xd(i); yd(i); zd(i)], currents);
     real(i,:) = BG(1:3);
 end
+
+%% Calculation Part
 
 xven = (xve - xv(1)) / xstep;
 yven = (yve - yv(1)) / ystep;
@@ -56,23 +67,31 @@ zd = reshape(zd, [], 1);
 % 
 interp = zeros(length(xd), 3);
 
-Nx = length(xv);
-Ny = length(yv);
-Nz = length(zv);
+
 vg = reshape(values, [Nx, Ny, Nz, 3]);
-% we padd the array so we can do i-1 and i+2 on the borders
-vg = padarray(vg, [2, 2, 2, 0], 'circular', 'both');
+% we padd the array so we can do i+1 on the right border
+vg = padarray(vg, [1, 1, 1, 0], 'circular', 'post');
+
+dvg_dx = diff(vg, 1, 1);
+dvg_dy = diff(vg, 1, 2);
+dvg_dz = diff(vg, 1, 3);
+
+dvg_dxy = diff(dvg_dx, 1, 2);
+dvg_dxz = diff(dvg_dx, 1, 3);
+dvg_dyz = diff(dvg_dy, 1, 3);
+
+dvg_dxyz = diff(dvg_dxy, 1, 3);
 
 for i = 1:length(xd)
-    % add 2 for the pad on left 
-    ix = floor(xd(i)) + 3;
-    iy = floor(yd(i)) + 3;
-    iz = floor(zd(i)) + 3;
+
+    ix = floor(xd(i)) + 1;
+    iy = floor(yd(i)) + 1;
+    iz = floor(zd(i)) + 1;
     
-    x = xd(i) + 3 - ix;
-    y = yd(i) + 3 - iy;
-    z = zd(i) + 3 - iz;
-    
+    x = xd(i) + 1 - ix;
+    y = yd(i) + 1 - iy;
+    z = zd(i) + 1 - iz;
+   
     D = squeeze([
     % f
         vg(ix, iy, iz, :);
@@ -84,70 +103,76 @@ for i = 1:length(xd)
         vg(ix+1, iy+1, iz, :);
         vg(ix+1, iy+1, iz+1, :);
     % df/dx
-        0.5 * (vg(ix+1, iy, iz, :)       - vg(ix-1, iy, iz, :));
-        0.5 * (vg(ix+1, iy, iz+1, :)     - vg(ix-1, iy, iz+1, :));
-        0.5 * (vg(ix+1, iy+1, iz, :)     - vg(ix-1, iy+1, iz, :));
-        0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix-1, iy+1, iz+1, :));
-        0.5 * (vg(ix+2, iy, iz, :)       - vg(ix, iy, iz, :));
-        0.5 * (vg(ix+2, iy, iz+1, :)     - vg(ix, iy, iz+1, :));
-        0.5 * (vg(ix+2, iy+1, iz, :)     - vg(ix, iy+1, iz, :));
-        0.5 * (vg(ix+2, iy+1, iz+1, :)   - vg(ix, iy+1, iz+1, :));
+        dvg_dx(ix, iy, iz, :);
+        dvg_dx(ix, iy, iz+1, :);
+        dvg_dx(ix, iy+1, iz, :);
+        dvg_dx(ix, iy+1, iz+1, :);
+        dvg_dx(ix+1, iy, iz, :);
+        dvg_dx(ix+1, iy, iz+1, :);
+        dvg_dx(ix+1, iy+1, iz, :);
+        dvg_dx(ix+1, iy+1, iz+1, :);
     % df/dy
-        0.5 * (vg(ix, iy+1, iz, :)       - vg(ix, iy-1, iz, :));
-        0.5 * (vg(ix, iy+1, iz+1, :)     - vg(ix, iy-1, iz+1, :));
-        0.5 * (vg(ix, iy+2, iz, :)       - vg(ix, iy, iz, :));
-        0.5 * (vg(ix, iy+2, iz+1, :)     - vg(ix, iy, iz+1, :));
-        0.5 * (vg(ix+1, iy+1, iz, :)     - vg(ix+1, iy-1, iz, :));
-        0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix+1, iy-1, iz+1, :));
-        0.5 * (vg(ix+1, iy+2, iz, :)     - vg(ix+1, iy, iz, :));
-        0.5 * (vg(ix+1, iy+2, iz+1, :)   - vg(ix+1, iy, iz+1, :));
+        dvg_dy(ix, iy, iz, :);
+        dvg_dy(ix, iy, iz+1, :);
+        dvg_dy(ix, iy+1, iz, :);
+        dvg_dy(ix, iy+1, iz+1, :);
+        dvg_dy(ix+1, iy, iz, :);
+        dvg_dy(ix+1, iy, iz+1, :);
+        dvg_dy(ix+1, iy+1, iz, :);
+        dvg_dy(ix+1, iy+1, iz+1, :);
     % df/dz
-        0.5 * (vg(ix, iy, iz+1, :)       - vg(ix, iy, iz-1, :));
-        0.5 * (vg(ix, iy, iz+2, :)       - vg(ix, iy, iz, :));
-        0.5 * (vg(ix, iy+1, iz+1, :)     - vg(ix, iy+1, iz-1, :));
-        0.5 * (vg(ix, iy+1, iz+2, :)     - vg(ix, iy+1, iz, :));
-        0.5 * (vg(ix+1, iy, iz+1, :)     - vg(ix+1, iy, iz-1, :));
-        0.5 * (vg(ix+1, iy, iz+2, :)     - vg(ix+1, iy, iz, :));
-        0.5 * (vg(ix+1, iy+1, iz+1, :)   - vg(ix+1, iy+1, iz-1, :));
-        0.5 * (vg(ix+1, iy+1, iz+2, :)   - vg(ix+1, iy+1, iz, :));
+        dvg_dz(ix, iy, iz, :);
+        dvg_dz(ix, iy, iz+1, :);
+        dvg_dz(ix, iy+1, iz, :);
+        dvg_dz(ix, iy+1, iz+1, :);
+        dvg_dz(ix+1, iy, iz, :);
+        dvg_dz(ix+1, iy, iz+1, :);
+        dvg_dz(ix+1, iy+1, iz, :);
+        dvg_dz(ix+1, iy+1, iz+1, :);
     % d2f/dxdy
-        0.25 * (vg(ix+1, iy+1, iz, :)    - vg(ix-1, iy+1, iz, :)    - vg(ix+1, iy - 1, iz)      + vg(ix-1, iy-1, iz));
-        0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy - 1, iz+1)    + vg(ix-1, iy-1, iz+1));
-        0.25 * (vg(ix+1, iy+2, iz, :)    - vg(ix-1, iy+2, iz, :)    - vg(ix+1, iy, iz)          + vg(ix-1, iy, iz));
-        0.25 * (vg(ix+1, iy+2, iz+1, :)  - vg(ix-1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1)        + vg(ix-1, iy, iz+1));
-        0.25 * (vg(ix+2, iy+1, iz, :)    - vg(ix, iy+1, iz, :)      - vg(ix+2, iy - 1, iz)      + vg(ix, iy-1, iz));
-        0.25 * (vg(ix+2, iy+1, iz+1, :)  - vg(ix, iy+1, iz+1, :)    - vg(ix+2, iy - 1, iz+1)    + vg(ix, iy-1, iz+1));
-        0.25 * (vg(ix+2, iy+2, iz, :)    - vg(ix, iy+2, iz, :)      - vg(ix+2, iy, iz)          + vg(ix, iy, iz));
-        0.25 * (vg(ix+2, iy+2, iz+1, :)  - vg(ix, iy+2, iz+1, :)    - vg(ix+2, iy, iz+1)        + vg(ix, iy, iz+1));
+        dvg_dxy(ix, iy, iz, :);
+        dvg_dxy(ix, iy, iz+1, :);
+        dvg_dxy(ix, iy+1, iz, :);
+        dvg_dxy(ix, iy+1, iz+1, :);
+        dvg_dxy(ix+1, iy, iz, :);
+        dvg_dxy(ix+1, iy, iz+1, :);
+        dvg_dxy(ix+1, iy+1, iz, :);
+        dvg_dxy(ix+1, iy+1, iz+1, :);
     % d2f/dxdz
-        0.25 * (vg(ix+1, iy, iz+1, :)    - vg(ix-1, iy, iz+1, :)    - vg(ix+1, iy - 1, iz-1)    + vg(ix-1, iy, iz-1));
-        0.25 * (vg(ix+1, iy, iz+2, :)    - vg(ix-1, iy, iz+2, :)    - vg(ix+1, iy - 1, iz)      + vg(ix-1, iy, iz));
-        0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy, iz-1)        + vg(ix-1, iy+1, iz-1));
-        0.25 * (vg(ix+1, iy+1, iz+2, :)  - vg(ix-1, iy+1, iz+2, :)  - vg(ix+1, iy, iz)          + vg(ix-1, iy+1, iz));
-        0.25 * (vg(ix+2, iy, iz+1, :)    - vg(ix, iy, iz+1, :)      - vg(ix+2, iy - 1, iz-1)    + vg(ix, iy, iz-1));
-        0.25 * (vg(ix+2, iy, iz+2, :)    - vg(ix, iy, iz+2, :)      - vg(ix+2, iy - 1, iz)      + vg(ix, iy, iz));
-        0.25 * (vg(ix+2, iy+1, iz+1, :)  - vg(ix, iy+1, iz+1, :)    - vg(ix+2, iy, iz-1)        + vg(ix, iy+1, iz-1));
-        0.25 * (vg(ix+2, iy+1, iz+2, :)  - vg(ix, iy+1, iz+2, :)    - vg(ix+2, iy, iz)          + vg(ix, iy+1, iz));
-    % d2f/dydz
-        0.25 * (vg(ix, iy+1, iz+1, :)    - vg(ix, iy-1, iz+1, :)    - vg(ix, iy+1, iz-1)        + vg(ix, iy-1, iz-1));
-        0.25 * (vg(ix, iy+1, iz+2, :)    - vg(ix, iy-1, iz+2, :)    - vg(ix, iy+1, iz)     + vg(ix, iy-1, iz));
-        0.25 * (vg(ix, iy+2, iz+1, :)    - vg(ix, iy, iz+1, :)      - vg(ix, iy+2, iz-1)        + vg(ix, iy, iz-1));
-        0.25 * (vg(ix, iy+2, iz+2, :)    - vg(ix, iy, iz+2, :)      - vg(ix, iy+2, iz)          + vg(ix, iy, iz));
-        0.25 * (vg(ix+1, iy+1, iz+1, :)  - vg(ix+1, iy-1, iz+1, :)  - vg(ix+1, iy+1, iz-1)      + vg(ix+1, iy-1, iz-1));
-        0.25 * (vg(ix+1, iy+1, iz+2, :)  - vg(ix+1, iy-1, iz+2, :)  - vg(ix+1, iy+1, iz)        + vg(ix+1, iy-1, iz));
-        0.25 * (vg(ix+1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1, :)    - vg(ix+1, iy+2, iz-1)      + vg(ix+1, iy, iz-1));
-        0.25 * (vg(ix+1, iy+2, iz+2, :)  - vg(ix+1, iy, iz+2, :)    - vg(ix+1, iy+2, iz)        + vg(ix+1, iy, iz));
-    % d3f/dxdydz
-        0.125 * (vg(ix+1, iy+1, iz+1, :) - vg(ix-1, iy+1, iz+1, :)  - vg(ix+1, iy-1, iz+1)      + vg(ix-1, iy-1, iz+1, :)   - vg(ix+1, iy+1, iz-1)  + vg(ix-1, iy+1, iz-1) + vg(ix+1, iy-1, iz-1)   -  vg(ix-1, iy-1, iz-1));
-        0.125 * (vg(ix+1, iy+1, iz+2, :) - vg(ix-1, iy+1, iz+2, :)  - vg(ix+1, iy-1, iz+2)      + vg(ix-1, iy-1, iz+2, :)   - vg(ix+1, iy+1, iz)    + vg(ix-1, iy+1, iz) + vg(ix+1, iy-1, iz)       -  vg(ix-1, iy-1, iz));
-        0.125 * (vg(ix+1, iy+2, iz+1, :) - vg(ix-1, iy+2, iz+1, :)  - vg(ix+1, iy, iz+1)        + vg(ix-1, iy, iz+1, :)     - vg(ix+1, iy+2, iz-1)  + vg(ix-1, iy+2, iz-1) + vg(ix+1, iy, iz-1)     -  vg(ix-1, iy, iz-1));
-        0.125 * (vg(ix+1, iy+2, iz+2, :) - vg(ix-1, iy+2, iz+2, :)  - vg(ix+1, iy, iz+2)        + vg(ix-1, iy, iz+2, :)     - vg(ix+1, iy+2, iz)    + vg(ix-1, iy+2, iz) + vg(ix+1, iy, iz)         -  vg(ix-1, iy, iz));
-        0.125 * (vg(ix+2, iy+1, iz+1, :) - vg(ix,   iy+1, iz+1, :)  - vg(ix+2, iy-1, iz+1)      + vg(ix, iy-1, iz+1, :)     - vg(ix+2, iy+1, iz-1)  + vg(ix,   iy+1, iz-1) + vg(ix+2, iy-1, iz-1)   -  vg(ix, iy-1, iz-1));
-        0.125 * (vg(ix+2, iy+1, iz+2, :) - vg(ix,   iy+1, iz+2, :)  - vg(ix+2, iy-1, iz+2)      + vg(ix, iy-1, iz+2, :)     - vg(ix+2, iy+1, iz)    + vg(ix,   iy+1, iz) + vg(ix+2, iy-1, iz)       -  vg(ix, iy-1, iz));
-        0.125 * (vg(ix+2, iy+2, iz+1, :) - vg(ix,   iy+2, iz+1, :)  - vg(ix+2, iy, iz+1)        + vg(ix, iy, iz+1, :)       - vg(ix+2, iy+2, iz-1)  + vg(ix,   iy+2, iz-1) + vg(ix+2, iy, iz-1)     -  vg(ix, iy, iz-1));
-        0.125 * (vg(ix+2, iy+2, iz+2, :) - vg(ix,   iy+2, iz+2, :)  - vg(ix+2, iy, iz+2)        + vg(ix, iy, iz+2, :)       - vg(ix+2, iy+2, iz)    + vg(ix,   iy+2, iz) + vg(ix+2, iy, iz)         -  vg(ix, iy, iz));
-        ]);
-     a_sol = M \ D;
+        dvg_dxz(ix, iy, iz, :);
+        dvg_dxz(ix, iy, iz+1, :);
+        dvg_dxz(ix, iy+1, iz, :);
+        dvg_dxz(ix, iy+1, iz+1, :);
+        dvg_dxz(ix+1, iy, iz, :);
+        dvg_dxz(ix+1, iy, iz+1, :);
+        dvg_dxz(ix+1, iy+1, iz, :);
+        dvg_dxz(ix+1, iy+1, iz+1, :);
+     % d2f/dydz
+        dvg_dyz(ix, iy, iz, :);
+        dvg_dyz(ix, iy, iz+1, :);
+        dvg_dyz(ix, iy+1, iz, :);
+        dvg_dyz(ix, iy+1, iz+1, :);
+        dvg_dyz(ix+1, iy, iz, :);
+        dvg_dyz(ix+1, iy, iz+1, :);
+        dvg_dyz(ix+1, iy+1, iz, :);
+        dvg_dyz(ix+1, iy+1, iz+1, :);
+     % d3f/dxdydz
+        dvg_dxyz(ix, iy, iz, :);
+        dvg_dxyz(ix, iy, iz+1, :);
+        dvg_dxyz(ix, iy+1, iz, :);
+        dvg_dxyz(ix, iy+1, iz+1, :);
+        dvg_dxyz(ix+1, iy, iz, :);
+        dvg_dxyz(ix+1, iy, iz+1, :);
+        dvg_dxyz(ix+1, iy+1, iz, :);
+        dvg_dxyz(ix+1, iy+1, iz+1, :);
+     ]);
+
+    if (ix < 4 && iy < 4 && iz < 4)
+        a_sol = M \ D;
+    else
+        a_sol = M(1:8,:) \ D(1:8, :);
+    end
+    
      interp(i, :) = [  B_fun(x, y, z, a_sol(:,1)'), ...
             B_fun(x, y, z, a_sol(:,2)'), ...
             B_fun(x, y, z, a_sol(:,3)')];
