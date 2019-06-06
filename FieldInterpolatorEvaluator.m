@@ -75,6 +75,21 @@ classdef FieldInterpolatorEvaluator < handle
             nmse = rmse ./ max(sqrt(sum(nv.^2, 2)));
         end
         
+        function [mae] = get_mae(obj)
+            % Gets the MAE score
+            nv = reshape(obj.NodeValues, [], 3);
+            nv_ = reshape(obj.FieldsPredicted, [], 3);
+            mae = mean(abs(nv - nv_));
+        end
+        
+        function [nmae] = get_nmae(obj)
+            % Gets the MAE normalized by the maximum field magnitude
+            nv = reshape(obj.NodeValues, [], 3);
+            nv_ = reshape(obj.FieldsPredicted, [], 3);
+            mae = mean(abs(nv - nv_));
+            nmae = mae ./ max(abs(nv));
+        end
+        
         function [fh] = plot_quiver_xy(obj, varargin)
             % Plots a 2D quiver plot on a plane slice parallel to the xy
             % plane
