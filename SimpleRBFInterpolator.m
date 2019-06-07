@@ -27,6 +27,10 @@ classdef SimpleRBFInterpolator < FieldInterpolator
         function field = getFieldAtPosition(obj, position)
             field = evaluate_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
         end
+        
+        function gradient = getGradientAtPosition(obj, position)
+            [~, gradient] = evaluate_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
+        end
     end
     
 end

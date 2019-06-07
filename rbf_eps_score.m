@@ -1,4 +1,4 @@
-function y = rbf_eps_score(nodes_dataset, eps)
+function y = rbf_eps_score(nodes_dataset, eps, simple)
 
     %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
     EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
@@ -44,8 +44,13 @@ function y = rbf_eps_score(nodes_dataset, eps)
 
         fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
         fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-
-        model = SimpleRBFInterpolator(nodes, fields, eps);
+        
+        if simple
+            model = SimpleRBFInterpolator(nodes, fields, eps);
+        else
+            model = DivFreeRBFInterpolator(nodes, fields, eps);
+        end
+        
         ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
 
         nrmse_scores(j,:) = 100*ev.get_nrmse();

@@ -39,25 +39,25 @@ NUM_CURRENTS = 50;
 EPS = 22.;
 
 r2_scores = zeros(NUM_CURRENTS, 3);
-nrmse_scores = zeros(NUM_CURRENTS, 3);
-
-for i=1:NUM_CURRENTS
-    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields = permute(fields, [4, 3, 2, 1]);
-    
-    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-    
-    model = SimpleRBFInterpolator(nodes, fields, EPS);
-    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-    
-    r2_scores(i,:) = ev.get_r2();
-    nrmse_scores(i,:) = 100*ev.get_nrmse();
-end
-
-disp('Simple RBF mean r2 scores:')
-disp(mean(r2_scores, 1));
-disp(mean(nrmse_scores, 1));
+% nrmse_scores = zeros(NUM_CURRENTS, 3);
+% 
+% for i=1:NUM_CURRENTS
+%     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields = permute(fields, [4, 3, 2, 1]);
+%     
+%     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+%     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+%     
+%     model = SimpleRBFInterpolator(nodes, fields, EPS);
+%     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+%     
+%     r2_scores(i,:) = ev.get_r2();
+%     nrmse_scores(i,:) = 100*ev.get_nrmse();
+% end
+% 
+% disp('Simple RBF mean r2 scores:')
+% disp(mean(r2_scores, 1));
+% disp(mean(nrmse_scores, 1));
 % 
 % EPS = 21.;
 % 
@@ -79,37 +79,37 @@ disp(mean(nrmse_scores, 1));
 % disp('Div-Free RBF mean r2 scores:')
 % disp(mean(r2_scores, 1));
 % 
-% for i=1:NUM_CURRENTS
-%     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-%     fields = permute(fields, [4, 3, 2, 1]);
-%     
-%     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-%     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-%     
-%     model = BSpline3DInterpolator(nodes, fields, 4);
-%     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-%     
-%     r2_scores(i,:) = ev.get_r2();
-% end
-% 
-% disp('BSpline3D mean r2 scores');
-% disp(mean(r2_scores, 1));
-% 
-% for i=1:NUM_CURRENTS
-%     fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-%     fields = permute(fields, [4, 3, 2, 1]);
-%     
-%     fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
-%     fields_ev = permute(fields_ev, [4, 3, 2, 1]);
-%     
-%     model = BSplineLaplacianInterpolator(nodes, fields, 4);
-%     ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-%     
-%     r2_scores(i,:) = ev.get_r2();
-% end
-% 
-% disp('BSplineLaplacian mean r2 scores');
-% disp(mean(r2_scores, 1));
+for i=1:NUM_CURRENTS
+    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields = permute(fields, [4, 3, 2, 1]);
+    
+    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+    
+    model = BSpline3DInterpolator(nodes, fields, 4);
+    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+    
+    r2_scores(i,:) = ev.get_r2();
+end
+
+disp('BSpline3D mean r2 scores');
+disp(mean(r2_scores, 1));
+
+for i=1:NUM_CURRENTS
+    fields = h5read(fullfile(NODES_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields = permute(fields, [4, 3, 2, 1]);
+    
+    fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
+    fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+    
+    model = BSplineLaplacianInterpolator(nodes, fields, 4);
+    ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
+    
+    r2_scores(i,:) = ev.get_r2();
+end
+
+disp('BSplineLaplacian mean r2 scores');
+disp(mean(r2_scores, 1));
 % 
 % load('tricubic_simple_M.mat', 'M');
 % 

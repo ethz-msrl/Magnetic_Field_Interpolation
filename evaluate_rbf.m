@@ -1,4 +1,4 @@
-function [ output ] = evaluate_rbf( position, nodes, eps, C )
+function [ output, gradient ] = evaluate_rbf( position, nodes, eps, C )
 %EVALUTE_RBF Evaluates the value of a 3D radial basis function
 %with a Gaussian kernel
 %
@@ -23,5 +23,12 @@ function [ output ] = evaluate_rbf( position, nodes, eps, C )
         dot(K, C(:,2));
         dot(K, C(:,3));
         ];
+    
+    pdiff = repmat(position, [size(nodes, 1), 1]) - nodes;
+    gradient = -2*eps*[ ...
+        (K .* C(:,1))' * pdiff ; ...
+        (K .* C(:,2))' * pdiff; ...
+        (K .* C(:,3))' * pdiff];
+        
 
 end
