@@ -16,6 +16,7 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
         dvg_dyz
         dvg_dxyz
         Coefs
+        Steps
     end
     
     methods
@@ -35,6 +36,10 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
             [~,~,obj.dvg_dxyz] = gradient(obj.dvg_dxy);
             
             getAllCoefficients(obj);
+            
+            pmin = min(reshape(obj.NodePositions, [],3),[],1);
+            pmax = max(reshape(obj.NodePositions, [],3),[],1);
+            obj.Steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
         end
         
         function getAllCoefficients(obj)
@@ -149,19 +154,20 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
         end
         
         function gradient = getGradientAtPosition(obj, position)
-            [A_sol, x, y, z] = obj.getCoefficients(position);
-            dBx = tricubic_grad(A_sol(:,:,:,1), x, y, z)';
-            dBy = tricubic_grad(A_sol(:,:,:,2), x, y, z)';
-            dBz = tricubic_grad(A_sol(:,:,:,3), x, y, z)';
-            gradient = [dBx; dBy; dBz];
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4, 3]);
+            dBx = tricubic_grad(A_sol(:,:,:,1), xe, ye, ze)';
+            dBy = tricubic_grad(A_sol(:,:,:,2), xe, ye, ze)';
+            dBz = tricubic_grad(A_sol(:,:,:,3), xe, ye, ze)';
+            gradient = [dBx/obj.Steps(1); dBy/obj.Steps(2);...
+                dBz/obj.Steps(3)];
         end
         
         function normalized = getNormalizedPositions(obj, positions)
             pm = reshape(positions, [], 3);
             pmin = min(reshape(obj.NodePositions, [],3),[],1);
             pmax = max(reshape(obj.NodePositions, [],3),[],1);
-            steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
-            normalized = reshape((pm - pmin) ./ steps, size(positions));
+            normalized = reshape((pm - pmin) ./ obj.Steps, size(positions));
         end
     end
     

@@ -1,12 +1,12 @@
 clear all;
 
-grid = struct('size', {3,4,5,6}, 'eps', {35, 35, 50, 50});
+grid = struct('size', {3,4,5,6}, 'degree', {3, 4, 4, 4});
 
 for g=1:length(grid)
     
     grid_size = grid(g).size;
-    eps = grid(g).eps;
-    fprintf('running grid size: %dx%d, eps: %2.f\n', grid_size, grid_size, eps);
+    degree = grid(g).degree;
+    fprintf('running grid size: %dx%d degree: %d \n', grid_size, grid_size, degree);
 
     
     nodes_dataset = sprintf('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_%d_h5/', grid_size);
@@ -44,24 +44,25 @@ for g=1:length(grid)
 
     positions_ev = cat(4, xg_ev, yg_ev, zg_ev);
 
-    NUM_CURRENTS = 50;
+    NUM_CURRENTS = 20;
 
     mae = zeros(NUM_CURRENTS, 3, 3);
     r2 = zeros(NUM_CURRENTS, 3, 3);
     meandivs = zeros(NUM_CURRENTS, 1);
     meancurls = zeros(NUM_CURRENTS, 3);
-
+    
+    load('tricubic_simple_M.mat');
     
     for i=1:NUM_CURRENTS
         fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
         fields = permute(fields, [4, 3, 2, 1]);
         % adding random noise
-        %fields = fields + 200e-6 * randn(size(fields));
+        fields = fields + 200e-6 * randn(size(fields));
 
         gradients_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/gradients');
         gradients_ev = permute(gradients_ev, [5, 4, 3, 2, 1]);
 
-        model = DivFreeRBFInterpolator(nodes, fields, eps);
+        model = SimpleTricubicInterpolator(nodes, fields, M);
 
         gradients = model.getGradientsAtPositions(positions_ev);
         divs = sum(gradients(:,:,:,1:3+1:9));
@@ -81,7 +82,7 @@ for g=1:length(grid)
 
     end
     
-    save_fn = sprintf('data/divfree_rbf_%dx%d_grad_200mTnoise.mat', grid_size, grid_size);
+    save_fn = sprintf('data/simple_tricubic_%dx%d_grad_200mTnoise.mat', grid_size, grid_size);
     save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
     disp('');

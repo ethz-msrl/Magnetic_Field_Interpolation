@@ -48,6 +48,9 @@ for g=1:length(grid)
 
     mae = zeros(NUM_CURRENTS, 3, 3);
     r2 = zeros(NUM_CURRENTS, 3, 3);
+    meandivs = zeros(NUM_CURRENTS, 1);
+    meancurls = zeros(NUM_CURRENTS, 3);
+    
     for i=1:NUM_CURRENTS
         fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
         fields = permute(fields, [4, 3, 2, 1]);
@@ -60,6 +63,11 @@ for g=1:length(grid)
         model = BSplineLaplacianInterpolator(nodes, fields, degree);
 
         gradients = model.getGradientsAtPositions(positions_ev);
+        divs = sum(gradients(:,:,:,1:3+1:9));
+        grads = reshape(gradients,[],9);
+        curls = [grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), grads(:,2) - grads(:,4)];
+        meancurls(i,:) = mean(curls, 1);
+        meandivs(i) = mean(divs(:));
 
         mae(i,:,:) = gradmae(gradients_ev, gradients);
         r2(i,:,:) = gradr2(gradients_ev, gradients);
@@ -73,7 +81,7 @@ for g=1:length(grid)
     end
     
     save_fn = sprintf('data/bspline_laplacian_%dx%d_grad_200mTnoise.mat', grid_size, grid_size);
-    save(save_fn, 'mae', 'r2');
+    save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
     disp('');
     fprintf('grid size: %d\n', grid_size);
@@ -82,5 +90,11 @@ for g=1:length(grid)
 
     disp('R2:')
     disp(squeeze(mean(r2, 1)));
+    
+    fprintf('Mean divergence: %2.3f (mT/m) \n', 1000*mean(meandivs));
+    temp = 1000*mean(meancurls,1);
+    fprintf('Mean curl: [%2.3f, %2.3f, %2.3f] (mT/m) \n',  temp(1), temp(2), temp(3));
+
+    fprintf('\n\n');
 
 end
