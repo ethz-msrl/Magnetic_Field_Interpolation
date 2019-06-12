@@ -1,6 +1,8 @@
 function test_gradients( model_name, grid, noise_std)
 % grid = struct('size', {3,4,5,6}, 'degree', {3, 4, 4, 4});
-
+    
+    results = struct('grid_size', {}, 'mae', {}, 'r2', {}, 'mean_div', {}, ...
+        'mean_curl', {});
     for g=1:length(grid)
 
         grid_size = grid(g).size;
@@ -9,9 +11,6 @@ function test_gradients( model_name, grid, noise_std)
 
         nodes_dataset = sprintf('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_%d_h5/', grid_size);
         EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
-
-        % load currents file
-        %currents = h5read('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/currents_3787.h5', '/currents')';
 
         % load positions
         nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');
@@ -22,10 +21,6 @@ function test_gradients( model_name, grid, noise_std)
         xg = permute(xg, [3, 2, 1]);
         yg = permute(yg, [3, 2, 1]);
         zg = permute(zg, [3, 2, 1]);
-
-%         xd = xg(:);
-%         yd = yg(:);
-%         zd = zg(:);
 
         nodes = cat(4, xg, yg, zg);
 
@@ -46,8 +41,8 @@ function test_gradients( model_name, grid, noise_std)
 
         mae = zeros(NUM_CURRENTS, 3, 3);
         r2 = zeros(NUM_CURRENTS, 3, 3);
-        meandivs = zeros(NUM_CURRENTS, 1);
-        meancurls = zeros(NUM_CURRENTS, 3);
+        mean_div = zeros(NUM_CURRENTS, 1);
+        mean_curl = zeros(NUM_CURRENTS, 3);
 
 
         for i=1:NUM_CURRENTS
@@ -85,8 +80,8 @@ function test_gradients( model_name, grid, noise_std)
             divs = sum(gradients(:,:,:,1:3+1:9));
             grads = reshape(gradients,[],9);
             curls = [grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), grads(:,2) - grads(:,4)];
-            meancurls(i,:) = mean(curls, 1);
-            meandivs(i) = mean(divs(:));
+            mean_curl(i,:) = mean(curls, 1);
+            mean_div(i) = mean(divs(:));
 
             mae(i,:,:) = gradmae(gradients_ev, gradients);
             r2(i,:,:) = gradr2(gradients_ev, gradients);
@@ -98,9 +93,15 @@ function test_gradients( model_name, grid, noise_std)
             end
 
         end
-
-        save_fn = sprintf('data/gradients/%s_%d_%d.mat', model_name, grid_size, noise_std);
-        save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
+        
+        results(g).grid_size = grid_size;
+        results(g).mae = reshape(squeeze(mean(mae,1)), [], 1);
+        results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
+        results(g).mean_div = mean(mean_div,1);
+        results(g).mean_curl = mean(mean_curl,1);
+        
+        %save_fn = sprintf('data/gradients/%s_%d_%d.mat', model_name, grid_size, noise_std);
+        %save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
         disp('');
         fprintf('grid size: %d\n', grid_size);
@@ -110,13 +111,15 @@ function test_gradients( model_name, grid, noise_std)
         disp('R2:')
         disp(squeeze(mean(r2, 1)));
 
-        fprintf('Mean divergence: %2.3f (mT/m) \n', 1000*mean(meandivs));
-        temp = 1000*mean(meancurls,1);
+        fprintf('Mean divergence: %2.3f (mT/m) \n', 1000*mean(mean_div));
+        temp = 1000*mean(mean_curl,1);
         fprintf('Mean curl: [%2.3f, %2.3f, %2.3f] (mT/m) \n',  temp(1), temp(2), temp(3));
 
         fprintf('\n\n');
 
     end
-
+    
+    save_fn = sprintf('data/gradients/%s_%d.mat', model_name, noise_std);
+    save(save_fn, 'results');
 end
 
