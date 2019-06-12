@@ -72,10 +72,10 @@ function test_fields( model_name, grid, noise_std)
                 degree = grid(g).degree;
                 model = BSplineLaplacianInterpolator(nodes, fields, degree);
             elseif strcmp(model_name, 'TRI3D')
-                load('tricubic_simple_M.mat');
+                load('tricubic_3D_M.mat');
                 model = Tricubic3DInterpolator(nodes, fields, M);
             elseif strcmp(model_name, 'TRILPL')
-                load('tricubic_scalar_field_matrix.mat');
+                load('tricubic_scalar_field_M.mat');
                 model = TricubicScalarFieldInterpolator(nodes, fields, M);
             else
                 error('invalid model name');

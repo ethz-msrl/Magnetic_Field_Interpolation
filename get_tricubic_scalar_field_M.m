@@ -1,4 +1,4 @@
-function [M] = get_tricubic_scalar_field_matrix()
+function [M] = get_tricubic_scalar_field_M()
 
     % Here we setup the linear system of constraints for doing tricubic
     % interpolation of a scalar potential that is defined using magnetic 
