@@ -16,6 +16,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         dvg_dyz
         dvg_dxyz
         Coefs
+        Steps
     end
     
     methods
@@ -34,6 +35,11 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             [~, ~, obj.dvg_dyz] = gradient(obj.dvg_dy);
             
             getAllCoefficients(obj);
+            
+            pmin = min(reshape(obj.NodePositions, [],3),[],1);
+            pmax = max(reshape(obj.NodePositions, [],3),[],1);
+            obj.Steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
+
  
         end
         
@@ -118,6 +124,15 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             field = -tricubic_grad(A_sol, xe, ye, ze);
         end
         
+        function gradient = getGradientAtPosition(obj, position)
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            H = -tricubic_hess(A_sol, xe, ye, ze);
+            gradient = [H(1,:)/obj.Steps(1); ...
+                H(2,:)/obj.Steps(2); ...
+                H(3,:)/obj.Steps(3)];
+        end
+        
 %         function gradient = getGradientAtPosition(obj, position)
 %             [a_sol, x, y, z] = obj.getCoefficients(position);
 %             gradient = [obj.GFun(x, y, z, a_sol(:,1)'), ...
@@ -128,9 +143,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         function normalized = getNormalizedPositions(obj, positions)
             pm = reshape(positions, [], 3);
             pmin = min(reshape(obj.NodePositions, [],3),[],1);
-            pmax = max(reshape(obj.NodePositions, [],3),[],1);
-            steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
-            normalized = reshape((pm - pmin) ./ steps, size(positions));
+            normalized = reshape((pm - pmin) ./ obj.Steps, size(positions));
         end
     end
     
