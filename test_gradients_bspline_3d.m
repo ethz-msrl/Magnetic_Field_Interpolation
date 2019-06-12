@@ -83,7 +83,7 @@ for g=1:length(grid)
 
     end
     
-    save_fn = sprintf('data/bspline_3d_%dx%d_grad_200mTnoise.mat', grid_size, grid_size);
+    save_fn = sprintf('data/gradients/bspline_3d_%dx%d_200mTnoise.mat', grid_size, grid_size);
     save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
     disp('');

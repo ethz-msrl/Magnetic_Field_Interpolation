@@ -80,7 +80,7 @@ for g=1:length(grid)
 
     end
     
-    save_fn = sprintf('data/simple_rbf_%dx%d_grad_200mTnoise.mat', grid_size, grid_size);
+    save_fn = sprintf('data/gradients/simple_rbf_%dx%d_200mTnoise.mat', grid_size, grid_size);
     save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
     disp('');
