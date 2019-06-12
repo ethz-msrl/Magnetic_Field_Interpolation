@@ -1,4 +1,4 @@
-classdef DivFreeRBFInterpolator < FieldInterpolator
+classdef RBFDivFreeInterpolator < FieldInterpolator
     %DIVFREERBFINTERPOLATOR Interpolates a 3D vector field by using a 
     % 3D divergence-free kernel
     
@@ -8,7 +8,7 @@ classdef DivFreeRBFInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = DivFreeRBFInterpolator(nodes, values, eps)
+        function obj = RBFDivFreeInterpolator(nodes, values, eps)
             %   Args:
             %           nodes (4D array): the node positions.
             %           the dimensions are Nx,Ny,Nz,3

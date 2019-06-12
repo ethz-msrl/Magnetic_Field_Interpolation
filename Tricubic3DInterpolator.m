@@ -1,4 +1,4 @@
-classdef SimpleTricubicInterpolator < FieldInterpolator
+classdef Tricubic3DInterpolator < FieldInterpolator
     %SIMPLETRICUBICINTERPOLATOR Performs tricubic interpolation separately
     % on the three field dimensions
     
@@ -20,7 +20,7 @@ classdef SimpleTricubicInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = SimpleTricubicInterpolator(nodes, values, M)
+        function obj = Tricubic3DInterpolator(nodes, values, M)
             obj.NodePositions = nodes;
             obj.NodeValues = values;
             obj.Nx = size(obj.NodePositions, 1);

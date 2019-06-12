@@ -50,7 +50,7 @@ function plot_eps_score(nodes_dataset)
             fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
-            model = SimpleRBFInterpolator(nodes, fields, eps);
+            model = RBF3DInterpolator(nodes, fields, eps);
             ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
 
             nrmse_scores(j,:) = 100*ev.get_nrmse();

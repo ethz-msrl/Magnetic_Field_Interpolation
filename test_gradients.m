@@ -1,5 +1,12 @@
 function test_gradients( model_name, grid, noise_std)
-% grid = struct('size', {3,4,5,6}, 'degree', {3, 4, 4, 4});
+% TEST_GRADIENTS Generates test data for gradients and saves to a file
+%   model_name: a string defining the interpolation model type
+%   grid: a struct containing both the grid size and params that are needed
+%   by the model
+%   noise_std: the standard deviation or Normally distributed noise to add
+%   to the data (set to 0 for no noise)
+%   
+%   a file will be saved to data/gradients/{model_name}_{noise_std}.mat
     
     results = struct('grid_size', {}, 'mae', {}, 'r2', {}, 'mean_div', {}, ...
         'mean_curl', {});
@@ -56,10 +63,10 @@ function test_gradients( model_name, grid, noise_std)
 
             if strcmp(model_name, 'RBF3D')
                 eps = grid(g).eps;
-                model = SimpleRBFInterpolator(nodes, fields, eps);
+                model = RBF3DInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBFD')
                 eps = grid(g).eps;
-                model = DivFreeRBFInterpolator(nodes, fields, eps);
+                model = RBFDivFreeInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'SPL3D')
                 degree = grid(g).degree;
                 model = BSpline3DInterpolator(nodes, fields, degree);
@@ -68,7 +75,7 @@ function test_gradients( model_name, grid, noise_std)
                 model = BSplineLaplacianInterpolator(nodes, fields, degree);
             elseif strcmp(model_name, 'TRI3D')
                 load('tricubic_simple_M.mat');
-                model = SimpleTricubicInterpolator(nodes, fields, M);
+                model = Tricubic3DInterpolator(nodes, fields, M);
             elseif strcmp(model_name, 'TRILPL')
                 load('tricubic_scalar_field_matrix.mat');
                 model = TricubicScalarFieldInterpolator(nodes, fields, M);

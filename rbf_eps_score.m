@@ -46,9 +46,9 @@ function y = rbf_eps_score(nodes_dataset, eps, simple)
         fields_ev = permute(fields_ev, [4, 3, 2, 1]);
         
         if simple
-            model = SimpleRBFInterpolator(nodes, fields, eps);
+            model = RBF3DInterpolator(nodes, fields, eps);
         else
-            model = DivFreeRBFInterpolator(nodes, fields, eps);
+            model = RBFDivFreeInterpolator(nodes, fields, eps);
         end
         
         ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);

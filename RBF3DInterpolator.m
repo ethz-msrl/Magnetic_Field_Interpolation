@@ -1,4 +1,4 @@
-classdef SimpleRBFInterpolator < FieldInterpolator
+classdef RBF3DInterpolator < FieldInterpolator
     %SIMPLERBFINTERPOLATOR Interpolates a 3D vector field by creating a Gaussian RBF
     %   for each dimension
     %   B_i = sum_i^N c_i * exp(-eps * ||pos - node_i||^2)
@@ -10,7 +10,7 @@ classdef SimpleRBFInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = SimpleRBFInterpolator(nodes, values, eps)
+        function obj = RBF3DInterpolator(nodes, values, eps)
             % Constructor
             %   Args:
             %           nodes (4D array): the node positions.
