@@ -1,12 +1,13 @@
 clear all;
 
-grid = struct('size', {3,4,5,6}, 'degree', {3, 4, 4, 4});
+grid = struct('size', {3,4,5,6});
 
+
+load('tricubic_simple_M.mat');
 for g=1:length(grid)
     
     grid_size = grid(g).size;
-    degree = grid(g).degree;
-    fprintf('running grid size: %dx%d degree: %d \n', grid_size, grid_size, degree);
+    fprintf('running grid size: %dx%d \n', grid_size, grid_size);
 
     
     nodes_dataset = sprintf('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_%d_h5/', grid_size);
@@ -51,7 +52,7 @@ for g=1:length(grid)
     meandivs = zeros(NUM_CURRENTS, 1);
     meancurls = zeros(NUM_CURRENTS, 3);
     
-    load('tricubic_simple_M.mat');
+
     
     for i=1:NUM_CURRENTS
         fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');

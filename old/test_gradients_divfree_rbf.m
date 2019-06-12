@@ -2,6 +2,8 @@ clear all;
 
 grid = struct('size', {3,4,5,6}, 'eps', {35, 35, 50, 50});
 
+NOISE_STD = 200e-6;
+
 for g=1:length(grid)
     
     grid_size = grid(g).size;
@@ -55,8 +57,8 @@ for g=1:length(grid)
     for i=1:NUM_CURRENTS
         fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
         fields = permute(fields, [4, 3, 2, 1]);
-        % adding random noise
-        %fields = fields + 200e-6 * randn(size(fields));
+        %adding random noise
+        fields = fields + NOISE_STD * randn(size(fields));
 
         gradients_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/gradients');
         gradients_ev = permute(gradients_ev, [5, 4, 3, 2, 1]);
@@ -81,7 +83,7 @@ for g=1:length(grid)
 
     end
     
-    save_fn = sprintf('data/gradients/divfree_rbf_%dx%d_200mTnoise.mat', grid_size, grid_size);
+    save_fn = sprintf('data/gradients/RBFD_%d_%d.mat', grid_size, NOISE_STD);
     save(save_fn, 'mae', 'r2', 'meandivs', 'meancurls');
 
     disp('');
