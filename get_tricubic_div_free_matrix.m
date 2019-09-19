@@ -67,6 +67,8 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
         curlAf(1,1,0) == 0,
         curlAf(1,1,1) == 0
         ];
+    
+    curl_equations = reshape(curl_equations, 8, 3);
 
     dB_dx = diff(curlAf(x,y,z),x);
     dB_dy = diff(curlAf(x,y,z),y);
@@ -82,6 +84,7 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
     dBy_dz(x,y,z) = dB_dz(2);
     dBz_dy(x,y,z) = dB_dy(3);
 
+    %grad_equations = zeros(24,3);
     grad_equations = [];
     for i = 1:2
         for j = 1:2
@@ -89,15 +92,17 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
                 grad_equations = [
                     grad_equations;
                     % enforcing gradient measurements
-                    dBx_dx(i-1, j-1, k-1) == 0;
+                    cat(2, [dBx_dx(i-1, j-1, k-1) == 0;
                     dBx_dy(i-1, j-1, k-1) == 0;
-                    dBx_dz(i-1, j-1, k-1) == 0;
+                    dBx_dz(i-1, j-1, k-1) == 0;], ...
+                    [
                     dBy_dx(i-1, j-1, k-1) == 0;
                     dBy_dy(i-1, j-1, k-1) == 0;
-                    dBy_dz(i-1, j-1, k-1) == 0;
+                    dBy_dz(i-1, j-1, k-1) == 0;], ...
+                    [
                     dBz_dx(i-1, j-1, k-1) == 0;
                     dBz_dy(i-1, j-1, k-1) == 0;
-                    dBz_dz(i-1, j-1, k-1) == 0;
+                    dBz_dz(i-1, j-1, k-1) == 0;])
                     % enforcing zero curl at the control points
 %                     dBx_dy(i-1, j-1, k-1) - dBy_dx(i-1, j-1, k-1) == 0;
 %                     dBx_dz(i-1, j-1, k-1) - dBz_dx(i-1, j-1, k-1) == 0;
@@ -107,7 +112,7 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
         end
     end
 
-    M = double(equationsToMatrix(vertcat(curl_equations, grad_equations), ...
+    M = double(equationsToMatrix(cat(1,curl_equations, grad_equations), ...
         vertcat(axv, ayv, azv)));
 
 end

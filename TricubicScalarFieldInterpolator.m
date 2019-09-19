@@ -128,17 +128,11 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
             H = -tricubic_hess(A_sol, xe, ye, ze);
+%             gradient = H;
             gradient = [H(1,:)/obj.Steps(1); ...
                 H(2,:)/obj.Steps(2); ...
                 H(3,:)/obj.Steps(3)];
         end
-        
-%         function gradient = getGradientAtPosition(obj, position)
-%             [a_sol, x, y, z] = obj.getCoefficients(position);
-%             gradient = [obj.GFun(x, y, z, a_sol(:,1)'), ...
-%                 obj.GFun(x, y, z, a_sol(:,2)'), ...
-%                 obj.GFun(x, y, z, a_sol(:,3)')];
-%         end
         
         function normalized = getNormalizedPositions(obj, positions)
             pm = reshape(positions, [], 3);

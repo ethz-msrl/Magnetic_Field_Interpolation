@@ -77,6 +77,9 @@ function test_fields( model_name, grid, noise_std)
             elseif strcmp(model_name, 'TRILPL')
                 load('tricubic_scalar_field_M.mat');
                 model = TricubicScalarFieldInterpolator(nodes, fields, M);
+            elseif strcmp(model_name, 'TRID')
+                load('tricubic_divfree_M.mat');
+                model = TricubicDivFreeInterpolator(nodes, fields, M);
             else
                 error('invalid model name');
             end

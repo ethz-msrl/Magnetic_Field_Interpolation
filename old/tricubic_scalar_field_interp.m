@@ -14,7 +14,7 @@ fields = zeros(8, 3);
 
 for i = 1:8
     pos = [xv(i), yv(i), zv(i)]; %+ [SCALE,0,0];
-    BG = magSystem.FieldAndGradient(pos, currents);
+    BG = cmag.FieldAndGradient(pos, currents);
     fields(i,:) = BG(1:3);
 end
 
@@ -28,28 +28,28 @@ Bx_yz = zeros(1,8);
 for i = 1:8
     pos_px = [xv(i) + eps, yv(i), zv(i)];
     pos_nx = [xv(i) - eps, yv(i), zv(i)];
-    BG_px = magSystem.FieldAndGradient(pos_px, currents);
-    BG_nx = magSystem.FieldAndGradient(pos_nx, currents);
+    BG_px = cmag.FieldAndGradient(pos_px, currents);
+    BG_nx = cmag.FieldAndGradient(pos_nx, currents);
     
     pos_py = [xv(i), yv(i) + eps, zv(i)];
     pos_ny = [xv(i), yv(i) - eps, zv(i)];
-    BG_py = magSystem.FieldAndGradient(pos_py, currents);
-    BG_ny = magSystem.FieldAndGradient(pos_ny, currents);
+    BG_py = cmag.FieldAndGradient(pos_py, currents);
+    BG_ny = cmag.FieldAndGradient(pos_ny, currents);
     
     pos_pz = [xv(i), yv(i), zv(i) + eps];
     pos_nz = [xv(i), yv(i), zv(i) - eps];
-    BG_pz = magSystem.FieldAndGradient(pos_pz, currents);
-    BG_nz = magSystem.FieldAndGradient(pos_nz, currents);
+    BG_pz = cmag.FieldAndGradient(pos_pz, currents);
+    BG_nz = cmag.FieldAndGradient(pos_nz, currents);
     
     pos_py_pz = [xv(i), yv(i) + eps, zv(i) + eps];
     pos_py_nz = [xv(i), yv(i) + eps, zv(i) - eps];
     pos_ny_pz = [xv(i), yv(i) - eps, zv(i) + eps];
     pos_ny_nz = [xv(i), yv(i) - eps, zv(i) - eps];
     
-    BG_py_pz = magSystem.FieldAndGradient(pos_py_pz, currents);
-    BG_py_nz = magSystem.FieldAndGradient(pos_py_nz, currents);
-    BG_ny_pz = magSystem.FieldAndGradient(pos_ny_pz, currents);
-    BG_ny_nz = magSystem.FieldAndGradient(pos_ny_nz, currents);
+    BG_py_pz = cmag.FieldAndGradient(pos_py_pz, currents);
+    BG_py_nz = cmag.FieldAndGradient(pos_py_nz, currents);
+    BG_ny_pz = cmag.FieldAndGradient(pos_ny_pz, currents);
+    BG_ny_nz = cmag.FieldAndGradient(pos_ny_nz, currents);
     
     % dBx/dy
     Bx_y(:) = (BG_py(1) - BG_ny(1))/(2);
@@ -98,7 +98,7 @@ for i = 1:N
         pos = SCALE * [xvtg(i,j), yvtg(i,j), 0];
         scalar_pot(i,j) = double(tricubic(A_sol, xvtg(i,j), yvtg(i,j), 0));
         fields_interp(i, j, :) = B_fun(xvtg(i, j), yvtg(i,j), 0);
-        BG = magSystem.FieldAndGradient(pos, currents);
+        BG = cmag.FieldAndGradient(pos, currents);
         fields_valid(i,j,:) = BG(1:3);
     end
 end
@@ -133,7 +133,7 @@ set(q2, 'UData', scale*qU2, 'VData', scale*qV2);
 %         for k =1:N
 %             pos = SCALE* [xvt(i), yvt(j), zvt(k)];
 %             fields_interp(i, j, k, :) = B_fun(xvt(i)*SCALE, yvt(j)*SCALE, zvt(k));
-%             BG = magSystem.FieldAndGradient(pos, currents);
+%             BG = cmag.FieldAndGradient(pos, currents);
 %             fields_valid(i,j,k,:) = BG(1:3);
 %         end
 %     end

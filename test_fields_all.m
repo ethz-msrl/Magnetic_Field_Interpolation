@@ -1,28 +1,31 @@
 clear all;
 
-RECOMPUTE = 0;
+RECOMPUTE = 1;
 
 grid_sizes = {3,4,5,6};
 noise_std = 0;
 
 if RECOMPUTE ~= 0
-    disp('Testing RBF 3D');
-    test_fields('RBF3D', struct('size', grid_sizes, 'eps', {1., 10., 22., 50.}), noise_std);
-
-    disp('Testing RBF Div-free');
-    test_fields('RBFD', struct('size', grid_sizes, 'eps', {35, 35, 50, 50}), noise_std);
-
-    disp('Testing Tricubic 3D');
-    test_fields('TRI3D', struct('size', grid_sizes), noise_std);
-
+%     disp('Testing RBF 3D');
+%     test_fields('RBF3D', struct('size', grid_sizes, 'eps', {1., 10., 22., 50.}), noise_std);
+% 
+%     disp('Testing RBF Div-free');
+%     test_fields('RBFD', struct('size', grid_sizes, 'eps', {35, 35, 50, 50}), noise_std);
+% 
+%     disp('Testing Tricubic 3D');
+%     test_fields('TRI3D', struct('size', grid_sizes), noise_std);
+% 
     disp('Testing Scalar Field Tricubic');
     test_fields('TRILPL', struct('size', grid_sizes), noise_std);
 
-    disp('Testing 3D BSpline');
-    test_fields('SPL3D', struct('size', grid_sizes, 'degree', {3, 4, 4, 4}), noise_std);
+%     disp('Testing Divergence Free Tricubic');
+%     test_fields('TRID', struct('size', grid_sizes), noise_std);
+% 
+%     disp('Testing 3D BSpline');
+%     test_fields('SPL3D', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
 
-    disp('Testing Laplacian BSpline');
-    test_fields('SPLLPL', struct('size', grid_sizes, 'degree', {3, 4, 4, 4}), noise_std);
+%     disp('Testing Laplacian BSpline');
+%     test_fields('SPLLPL', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
 end
 
 output_files = dir('data/fields/*.mat');
