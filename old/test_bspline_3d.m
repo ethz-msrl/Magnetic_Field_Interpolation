@@ -1,5 +1,5 @@
 %% Getting values
-load('../System_Calibration/cmag_05-12-18.mat')
+load('../../System_Calibration/cmag_05-12-18.mat')
 
 % discretization of input grid
 nv = 5;
@@ -48,7 +48,7 @@ end
 
 %% Spline Fit
 
-D = 4; % degree of b-spline
+D = 5; % degree of b-spline
 nk = nv;
 
 % this gets the appropriate knot sequence that satisfies the
@@ -86,18 +86,23 @@ hold off;
 %% Kernel size
 
 % we iterate the number of knots and see the average fit error
-nkv = 2:12;
+nkv = 5:16;
 avg_errors = zeros(size(nkv));
 
 for i = 1:length(nkv)
 
     nk = nkv(i);
-%     k_n = aptknt(linspace(xv(1), xv(end), nk), D);
-%     k_m = aptknt(linspace(yv(1), yv(end), nk), D);
-%     k_p = aptknt(linspace(zv(1), zv(end), nk), D);
-    k_n = augknt(linspace(xv(1), xv(end), nk), D);
-    k_m = augknt(linspace(yv(1), yv(end), nk), D);
-    k_p = augknt(linspace(zv(1), zv(end), nk), D);
+    
+%      k_n = optknt(linspace(xv(1), xv(end), nk), D, 100);
+%      k_m = optknt(linspace(yv(1), yv(end), nk), D, 100);
+%      k_p = optknt(linspace(zv(1), zv(end), nk), D, 100);
+
+    k_n = aptknt(linspace(xv(1), xv(end), nk), D);
+    k_m = aptknt(linspace(yv(1), yv(end), nk), D);
+    k_p = aptknt(linspace(zv(1), zv(end), nk), D);
+%     k_n = augknt(linspace(xv(1), xv(end), nk), D);
+%     k_m = augknt(linspace(yv(1), yv(end), nk), D);
+%     k_p = augknt(linspace(zv(1), zv(end), nk), D);
 
     N = spcol(k_n, D, xv);
     M = spcol(k_m, D, yv);

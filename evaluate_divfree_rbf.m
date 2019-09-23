@@ -6,7 +6,7 @@ function [ output ] = evaluate_divfree_rbf( position, nodes, eps, C )
 %   y(position) = sum_j ( Psi(position - node_j) * C_j)
 %
 %   where Psi is the 3D matrix-valued divergence-free RBF with a Gaussian
-%   kernl
+%   kernel
 %
 %   position: 3D vector at which to evaluate the RBF
 %   nodes: Nx3 matrix of node positions

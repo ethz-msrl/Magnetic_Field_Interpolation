@@ -1,4 +1,7 @@
-function y = rbf_eps_score(nodes_dataset, eps, simple)
+function y = rbf_eps_score(nodes_dataset, eps, type)
+% type 0: Gaussian RBF3D
+% type 1: Multiquadric 3D
+% type 2: Gaussian Div-free RBF
 
     %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
     EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
@@ -45,8 +48,10 @@ function y = rbf_eps_score(nodes_dataset, eps, simple)
         fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
         fields_ev = permute(fields_ev, [4, 3, 2, 1]);
         
-        if simple
+        if type == 0
             model = RBF3DInterpolator(nodes, fields, eps);
+        elseif type == 1
+            model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
         else
             model = RBFDivFreeInterpolator(nodes, fields, eps);
         end

@@ -64,6 +64,9 @@ function test_gradients( model_name, grid, noise_std)
             if strcmp(model_name, 'RBF3D')
                 eps = grid(g).eps;
                 model = RBF3DInterpolator(nodes, fields, eps);
+            elseif strcmp(model_name, 'RBF-MQ-3D')
+                eps = grid(g).eps;
+                model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBFD')
                 eps = grid(g).eps;
                 model = RBFDivFreeInterpolator(nodes, fields, eps);

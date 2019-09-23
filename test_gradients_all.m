@@ -9,7 +9,9 @@ noise_std = 0;
 if RECOMPUTE ~= 0
 %     disp('Testing RBF 3D');
 %     test_gradients('RBF3D', struct('size', grid_sizes, 'eps', {1., 10., 22., 50.}), noise_std);
-% 
+    disp('Testing RBF Multiquadric 3D');
+    test_gradients('RBF-MQ-3D', struct('size', grid_sizes, 'eps', {10.4525, 14.6804, 24.3048,  24.6842}), noise_std);
+
 %     disp('Testing RBF Div-free');
 %     test_gradients('RBFD', struct('size', grid_sizes, 'eps', {35, 35, 50, 50}), noise_std);
 % 

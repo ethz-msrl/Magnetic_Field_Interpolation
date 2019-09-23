@@ -59,25 +59,31 @@ function test_fields( model_name, grid, noise_std)
             fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
-            if strcmp(model_name, 'RBF3D')
+            if strcmp(model_name, 'RBF-3D')
                 eps = grid(g).eps;
                 model = RBF3DInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'RBFD')
+            elseif strcmp(model_name, 'RBF-MQ-3D')
+                eps = grid(g).eps;
+                model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
+            elseif strcmp(model_name, 'RBF-DF')
                 eps = grid(g).eps;
                 model = RBFDivFreeInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'SPL3D')
+            elseif strcmp(model_name, 'RBF-MQ-DF')
+                eps = grid(g).eps;
+                model = RBFDivFreeMultiquadricInterpolator(nodes, fields, eps);
+            elseif strcmp(model_name, 'SPL-3D')
                 degree = grid(g).degree;
                 model = BSpline3DInterpolator(nodes, fields, degree);
-            elseif strcmp(model_name, 'SPLLPL')
+            elseif strcmp(model_name, 'SPL-LPL')
                 degree = grid(g).degree;
                 model = BSplineLaplacianInterpolator(nodes, fields, degree);
-            elseif strcmp(model_name, 'TRI3D')
+            elseif strcmp(model_name, 'TRI-3D')
                 load('tricubic_3D_M.mat');
                 model = Tricubic3DInterpolator(nodes, fields, M);
-            elseif strcmp(model_name, 'TRILPL')
+            elseif strcmp(model_name, 'TRI-LPL')
                 load('tricubic_scalar_field_M.mat');
                 model = TricubicScalarFieldInterpolator(nodes, fields, M);
-            elseif strcmp(model_name, 'TRID')
+            elseif strcmp(model_name, 'TRI-DF')
                 load('tricubic_divfree_M.mat');
                 model = TricubicDivFreeInterpolator(nodes, fields, M);
             else

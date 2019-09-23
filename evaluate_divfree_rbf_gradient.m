@@ -1,4 +1,4 @@
-function [ output ] = evaluate_rbf_gradient( position, nodes, eps, C )
+function [ output ] = evaluate_divfree_rbf_gradient( position, nodes, eps, C )
 %EVALUTE_RBF Evaluates the gradient of a 3D divergence-free radial basis
 %function with a Gaussian kernel
 %
