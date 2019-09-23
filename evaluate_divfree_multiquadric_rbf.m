@@ -17,8 +17,10 @@ function [ output ] = evaluate_divfree_multiquadric_rbf( position, nodes, eps, C
     xd = nodes(:,1);
     yd = nodes(:,2);
     zd = nodes(:,3);
+    
     K = sqrt(1 + eps * ((position(1) - xd).^2 + (position(2) - yd).^2 + ...
         (position(3) - zd).^2));
+    
     K3 = K.^3;
 
     psi_11 = 2*eps ./ K - eps^2 * ((position(2) - yd).^2 + (position(3) - zd).^2) ./ K3 ;

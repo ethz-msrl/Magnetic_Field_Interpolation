@@ -18,7 +18,7 @@ classdef RBFDivFreeMultiquadricInterpolator < FieldInterpolator
             obj.NodePositions = reshape(nodes, [], 3);
             obj.NodeValues = reshape(values, [], 3);
             obj.Eps = eps;
-            obj.Coefs = get_divfree_rbf_coefficients(obj.NodePositions, ...
+            obj.Coefs = get_divfree_multiquadric_rbf_coefficients(obj.NodePositions, ...
                 obj.NodeValues, eps);
         end
         

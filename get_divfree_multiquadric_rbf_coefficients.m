@@ -12,6 +12,7 @@ function [ C ] = get_divfree_multiquadric_rbf_coefficients( positions, values, e
 
     K = sqrt(1 + eps * ((xd(ii) - xd(jj)).^2 + (yd(ii) - yd(jj)).^2 + ...
         (zd(ii) - zd(jj)).^2));
+    
     K3 = K.^3;
 
     psi_11 = 2*eps ./ K - eps^2 * ((yd(ii) - yd(jj)).^2 + (zd(ii) - zd(jj)).^2) ./ K3 ;
