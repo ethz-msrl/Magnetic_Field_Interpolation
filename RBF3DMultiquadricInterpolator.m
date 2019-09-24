@@ -7,6 +7,7 @@ classdef RBF3DMultiquadricInterpolator < FieldInterpolator
     properties (SetAccess = private)
         Eps
         Coefs
+        CondNumber
     end
     
     methods
@@ -21,7 +22,7 @@ classdef RBF3DMultiquadricInterpolator < FieldInterpolator
             obj.NodePositions = reshape(nodes, [], 3);
             obj.NodeValues = reshape(values, [], 3);
             obj.Eps = eps;
-            obj.Coefs = get_multiquadric_rbf_coefficients(obj.NodePositions, obj.NodeValues, eps);
+            [obj.Coefs, obj.CondNumber] = get_multiquadric_rbf_coefficients(obj.NodePositions, obj.NodeValues, eps);
         end
         
         function field = getFieldAtPosition(obj, position)

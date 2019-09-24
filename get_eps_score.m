@@ -1,4 +1,8 @@
-function plot_eps_score(nodes_dataset)
+function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
+% type 0: Gaussian RBF3D
+% type 1: Multiquadric 3D
+% type 2: Gaussian Div-free
+% type 3: Multiquadric Div-free
 
     %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
     EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
@@ -37,12 +41,14 @@ function plot_eps_score(nodes_dataset)
 
     NUM_CURRENTS = 10;
 
-    eps_v = linspace(5,30,20);
+    eps_v = linspace(1,50,20);
 
     scores = zeros(length(eps_v), 1);
+    cond_numbers = zeros(length(eps_v), 1);
     for i = 1:length(eps_v)
         eps = eps_v(i);
         nrmse_scores = zeros(NUM_CURRENTS, 3);
+        cond_numbers_temp = zeros(NUM_CURRENTS,1);
         for j=1:NUM_CURRENTS
             fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', j)), '/fields');
             fields = permute(fields, [4, 3, 2, 1]);
@@ -50,18 +56,24 @@ function plot_eps_score(nodes_dataset)
             fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
-            model = RBF3DInterpolator(nodes, fields, eps);
+            if type == 0
+                model = RBF3DInterpolator(nodes, fields, eps);
+            elseif type == 1
+                model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
+            elseif type == 2
+                model = RBFDivFreeInterpolator(nodes, fields, eps);
+            else
+                model = RBFDivFreeMultiquadricInterpolator(nodes, fields, eps);
+            end
+            cond_numbers_temp(j) = model.CondNumber;
+            
             ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
 
             nrmse_scores(j,:) = 100*ev.get_nrmse();
         end
-
+        
+        cond_numbers(i) = mean(cond_numbers_temp);
         scores(i,:) = mean(nrmse_scores(:));
     end
-
-    figure();
-    bar(eps_v, scores);
-    xlabel('eps');
-    ylabel('normalized RMSE (%)');
 
 end

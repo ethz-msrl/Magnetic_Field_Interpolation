@@ -1,4 +1,4 @@
-function [ C ] = get_divfree_multiquadric_rbf_coefficients( positions, values, eps )
+function [ C, cond_number ] = get_divfree_multiquadric_rbf_coefficients( positions, values, eps )
 %GET_RBF_COEFFICIENTS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -28,6 +28,8 @@ function [ C ] = get_divfree_multiquadric_rbf_coefficients( positions, values, e
         psi_12, psi_22, psi_23;
         psi_13, psi_23, psi_33;
         ];
+    
+    cond_number = cond(A);
     
     D = reshape(values, [], 1);
     
