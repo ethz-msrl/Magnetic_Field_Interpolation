@@ -14,6 +14,7 @@ legend('show');
 hold off;
 
 opt.XLabel = 'Grid Size';
+opt.XMinorTick = 'off';
 opt.YLabel = 'Best Eps';
 opt.Markers = {'o', '+', '*', 'x'};
 opt.BoxDim = [3.45/2, 2.1];
@@ -28,9 +29,6 @@ opt.Colors = [0.882,0.416,0.525;
           0.000,0.604,0.871;
           0.784,0.427,0.843;
           0.882,0.416,0.525];
-
-
-%opt.FileName = 'figures/best_eps.eps';
 
 setPlotProp(opt);
 

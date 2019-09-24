@@ -56,7 +56,7 @@ function y = rbf_eps_score(nodes_dataset, eps, type)
         elseif type == 2
             model = RBFDivFreeInterpolator(nodes, fields, eps);
         else
-            model = RBFMultiquadricDivFreeInterpolator(nodes, fields, eps);
+            model = RBFDivFreeMultiquadricInterpolator(nodes, fields, eps);
         end
         
         ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);

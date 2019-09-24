@@ -21,7 +21,7 @@ colors = [0.882,0.416,0.525;
           0.784,0.427,0.843;
           0.882,0.416,0.525];
 
-load('data/eps_score/eps_score_RBF-MQ-3D_4.mat');
+load('data/eps_score/RBF-MQ-3D_4.mat');
 
 fh = figure;
 plot(eps_v, scores, '-o', 'LineWidth', 2.0);
