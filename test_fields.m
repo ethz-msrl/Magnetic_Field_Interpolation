@@ -45,9 +45,11 @@ function test_fields( model_name, grid, noise_std)
         positions_ev = cat(4, xg_ev, yg_ev, zg_ev);
 
         NUM_CURRENTS = 20;
-
+        
+        mae = zeros(NUM_CURRENTS, 3);
         nmae = zeros(NUM_CURRENTS, 3);
         rmse = zeros(NUM_CURRENTS,3);
+        nrmse = zeros(NUM_CURRENTS,3);
         r2 = zeros(NUM_CURRENTS, 3);
 
         for i=1:NUM_CURRENTS
@@ -91,8 +93,11 @@ function test_fields( model_name, grid, noise_std)
             end
             
             ev = FieldInterpolatorEvaluator(model, positions_ev, fields_ev);
-
+            
+            mae(i,:) = ev.get_mae();
             nmae(i,:) = ev.get_nmae();
+            rmse(i,:) = ev.get_rmse();
+            nrmse(i,:) = ev.get_nrmse();
             r2(i,:) = ev.get_r2();
 
             percent_done = 100 * i / NUM_CURRENTS;
@@ -104,9 +109,11 @@ function test_fields( model_name, grid, noise_std)
         end
         
         results(g).grid_size = grid_size;
+        results(g).mae = reshape(squeeze(mean(nmae,1)), [], 1);
         results(g).nmae = reshape(squeeze(mean(nmae,1)), [], 1);
         results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
-        results(g).rmse = reshape(squeeze(mean(r2,1)), [], 1);
+        results(g).rmse = reshape(squeeze(mean(rmse,1)), [], 1);
+        results(g).nrmse = reshape(squeeze(mean(nrmse,1)), [], 1);
 
         disp('');
         fprintf('grid size: %d\n', grid_size);
