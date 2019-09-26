@@ -1,41 +1,51 @@
 clear all;
 
-RECOMPUTE = 1;
+RECOMPUTE = 0;
 
 grid_sizes = {3,4,5,6};
 
 noise_std = 0;
 
 if RECOMPUTE ~= 0
-%     disp('Testing RBF 3D');
-%     test_gradients('RBF3D', struct('size', grid_sizes, 'eps', {1., 10., 22., 50.}), noise_std);
+    disp('Testing RBF 3D');
+    load('data/best_eps/RBF-3D', 'best_eps');
+    test_gradients('RBF-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+   
     disp('Testing RBF Multiquadric 3D');
-    test_gradients('RBF-MQ-3D', struct('size', grid_sizes, 'eps', {10.4525, 14.6804, 24.3048,  24.6842}), noise_std);
+    load('data/best_eps/RBF-MQ-3D', 'best_eps');
+    test_gradients('RBF-MQ-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
 
-%     disp('Testing RBF Div-free');
-%     test_gradients('RBFD', struct('size', grid_sizes, 'eps', {35, 35, 50, 50}), noise_std);
-% 
-%     disp('Testing Tricubic 3D');
-%     test_gradients('TRI3D', struct('size', grid_sizes), noise_std);
-% 
-%     disp('Testing Scalar Field Tricubic');
-%     test_gradients('TRILPL', struct('size', grid_sizes), noise_std);
+    disp('Testing RBF Div-free');
+    load('data/best_eps/RBF-DF', 'best_eps');
+    test_gradients('RBF-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
 
-%     disp('Testing 3D BSpline');
-%     test_gradients('SPL3D', struct('size', grid_sizes, 'degree', {3, 4, 4, 4}), noise_std);
-% 
-%     disp('Testing Laplacian BSpline');
-%     test_gradients('SPLLPL', struct('size', grid_sizes, 'degree', {3, 4, 4, 4}), noise_std);
+    disp('Testing RBF Multiquadric Div-free');
+    load('data/best_eps/RBF-MQ-DF');
+    test_gradients('RBF-MQ-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+
+    disp('Testing Tricubic 3D');
+    test_gradients('TRI-3D', struct('size', grid_sizes), noise_std);
+
+    disp('Testing Scalar Field Tricubic');
+    test_gradients('TRI-LPL', struct('size', grid_sizes), noise_std);
+    
+    disp('Testing 3D BSpline');
+    test_gradients('SPL-3D', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
+
+    disp('Testing Laplacian BSpline');
+    test_gradients('SPL-LPL', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
 end
 
 output_files = dir('data/gradients/*.mat');
 
 close all;
 
-cmap = [0.105882352941176 0.619607843137255 0.466666666666667;0.850980392156863 0.372549019607843 0.00784313725490196;0.458823529411765 0.43921568627451 0.701960784313725;0.905882352941176 0.16078431372549 0.541176470588235;0.4 0.650980392156863 0.117647058823529;0.901960784313726 0.670588235294118 0.00784313725490196];
 
-colormap(cmap);
 Nf = length(output_files);
+cmap = cbrewer('qual', 'Paired', Nf);
+
+
+nmae = zeros(Nf, length(grid_sizes));
 mae = zeros(Nf, length(grid_sizes));
 r2 = zeros(Nf, length(grid_sizes));
 mean_div = zeros(Nf, length(grid_sizes));
@@ -51,41 +61,76 @@ for i=1:Nf
     
     results = importdata(filename);
     mae(i,:) = mean([results.mae]);
+    nmae(i,:) = mean([results.nmae]);
 %     bar(fh_mae.CurrentAxes, [results.grid_size], mean([results.mae],1), ...
 %         'DisplayName', model_name, 'FaceColor', cmap(i,:));
     r2(i,:) = mean([results.r2]);
     mean_div(i,:) = [results.mean_div];
     mean_curl(i,:) = sqrt(sum(reshape([results.mean_curl],3,4)'.^2,2));
 end
-fh_mae = figure('Name', 'Mean MAE');
-bar([results.grid_size], mae', 'grouped');
-ax = fh_mae.CurrentAxes;
+fh_nmae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
+    'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+colormap(cmap);
+ax = gca;
+ax.ColorOrder = cmap;
+b = bar([results.grid_size], 100*nmae', 'grouped');
+for i=1:length(Nf)
+    b(i).FaceColor = cmap(i,:);
+end
+ax = fh_nmae.CurrentAxes;
 
 xticks(ax, cell2mat(grid_sizes));
-xlabel(ax, 'grid size');
-ylabel(ax, 'Mean Absolute Error (T/m)');
+xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
+ylabel(ax, 'N-MAE (%)', 'Interpreter', 'latex');
 legend(model_names);
 
-fh_r2 = figure('Name', 'Mean R2');
-bar([results.grid_size], r2', 'grouped');
+set(fh_nmae, 'PaperUnits', 'inches');
+set(fh_nmae, 'PaperSize', [3.45/2, 2.1]);
+
+%export_fig(fh_nmae, 'figures/interp_gradient_nmae.pdf');
+
+fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
+     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+
+% we sort the by the r2 in the lowest grid resolution
+[~, idx] = sort(r2(:,1), 1);
+
+b = bar([results.grid_size], r2(idx,:)', 'grouped');
+% don't forget to also sort the colors so they match the other figure
+for i=1:length(idx)
+    b(i).FaceColor = cmap(idx(i),:);
+end
+
 ax = fh_r2.CurrentAxes;
 xticks(ax, cell2mat(grid_sizes));
-xlabel(ax, 'grid size');
-ylabel(ax, 'R2');
-legend(model_names);
+xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
+ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
+ylim(ax, [min(r2(:))-0.1, 1])
+legend(model_names(idx));
 
-fh_md = figure('Name', 'Mean Divergence');
+%export_fig(fh_r2, 'figures/interp_gradient_r2.pdf');
+
+fh_md = figure('Name', 'Mean Divergence', 'units', 'inch', ...
+     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+colormap(cmap);
 bar([results.grid_size], 1000*mean_div', 'grouped');
 ax = fh_md.CurrentAxes;
 xticks(ax, cell2mat(grid_sizes));
-xlabel(ax, 'grid size');
-ylabel(ax, 'Mean Divergence (mT/m)');
+xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
+ylabel(ax, 'Mean Divergence (mT/m)', 'Interpreter', 'latex');
 legend(model_names);
 
-fh_mc = figure('Name', 'Mean Curl Magnitude');
+%export_fig(fh_md, 'figures/interp_divergence.pdf');
+
+fh_mc = figure('Name', 'Mean Curl Magnitude', 'units', 'inch', ...
+     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+colormap(cmap);
 bar([results.grid_size], 1000*mean_curl', 'grouped');
 ax = fh_mc.CurrentAxes;
 xticks(ax, cell2mat(grid_sizes));
-xlabel(ax, 'grid size');
-ylabel(ax, 'Mean Curl Magniture (mT/m)');
+xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
+
+ylabel(ax, 'Mean Curl Magnitude (mT/m)', 'Interpreter', 'latex');
 legend(model_names);
+
+%export_fig(fh_mc, 'figures/interp_curl.pdf');

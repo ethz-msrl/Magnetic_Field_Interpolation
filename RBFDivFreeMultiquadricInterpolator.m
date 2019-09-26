@@ -29,9 +29,8 @@ classdef RBFDivFreeMultiquadricInterpolator < FieldInterpolator
         end
         
         function gradient = getGradientAtPosition(obj, position)
-            error('not done yet');
-%             gradient = evaluate_divfree_rbf_gradient(position, ...
-%             obj.NodePositions, obj.Eps, obj.Coefs);
+            gradient = evaluate_divfree_multiquadric_rbf_gradient(position, ...
+            obj.NodePositions, obj.Eps, obj.Coefs);
         end
     end
     

@@ -47,6 +47,7 @@ function test_gradients( model_name, grid, noise_std)
         NUM_CURRENTS = 20;
 
         mae = zeros(NUM_CURRENTS, 3, 3);
+        nmae = zeros(NUM_CURRENTS, 3, 3);
         r2 = zeros(NUM_CURRENTS, 3, 3);
         mean_div = zeros(NUM_CURRENTS, 1);
         mean_curl = zeros(NUM_CURRENTS, 3);
@@ -61,25 +62,28 @@ function test_gradients( model_name, grid, noise_std)
             gradients_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/gradients');
             gradients_ev = permute(gradients_ev, [5, 4, 3, 2, 1]);
 
-            if strcmp(model_name, 'RBF3D')
+            if strcmp(model_name, 'RBF-3D')
                 eps = grid(g).eps;
                 model = RBF3DInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-3D')
                 eps = grid(g).eps;
                 model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'RBFD')
+            elseif strcmp(model_name, 'RBF-DF')
                 eps = grid(g).eps;
                 model = RBFDivFreeInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'SPL3D')
+            elseif strcmp(model_name, 'RBF-MQ-DF')
+                eps = grid(g).eps;
+                model = RBFDivFreeMultiquadricInterpolator(nodes, fields, eps);
+            elseif strcmp(model_name, 'SPL-3D')
                 degree = grid(g).degree;
                 model = BSpline3DInterpolator(nodes, fields, degree);
-            elseif strcmp(model_name, 'SPLLPL')
+            elseif strcmp(model_name, 'SPL-LPL')
                 degree = grid(g).degree;
                 model = BSplineLaplacianInterpolator(nodes, fields, degree);
-            elseif strcmp(model_name, 'TRI3D')
+            elseif strcmp(model_name, 'TRI-3D')
                 load('tricubic_3D_M.mat');
                 model = Tricubic3DInterpolator(nodes, fields, M);
-            elseif strcmp(model_name, 'TRILPL')
+            elseif strcmp(model_name, 'TRI-LPL')
                 load('tricubic_scalar_field_M.mat');
                 model = TricubicScalarFieldInterpolator(nodes, fields, M);
             else
@@ -87,13 +91,14 @@ function test_gradients( model_name, grid, noise_std)
             end
             
             gradients = model.getGradientsAtPositions(positions_ev);
-            divs = sum(gradients(:,:,:,1:3+1:9));
             grads = reshape(gradients,[],9);
+            divs = sum(grads(:,1:3+1:9),2);
             curls = [grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), grads(:,2) - grads(:,4)];
             mean_curl(i,:) = mean(curls, 1);
             mean_div(i) = mean(divs(:));
 
             mae(i,:,:) = gradmae(gradients_ev, gradients);
+            nmae(i,:,:) = mae(i,:,:) ./ max(reshape(abs(gradients_ev), [], 3,3),[], 1);
             r2(i,:,:) = gradr2(gradients_ev, gradients);
 
             percent_done = 100 * i / NUM_CURRENTS;
@@ -106,6 +111,7 @@ function test_gradients( model_name, grid, noise_std)
         
         results(g).grid_size = grid_size;
         results(g).mae = reshape(squeeze(mean(mae,1)), [], 1);
+        results(g).nmae = reshape(squeeze(mean(nmae,1)), [], 1);
         results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
         results(g).mean_div = mean(mean_div,1);
         results(g).mean_curl = mean(mean_curl,1);

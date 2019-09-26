@@ -1,15 +1,14 @@
 clear all;
 
-RECOMPUTE = 0;
+RECOMPUTE = 1;
 
 grid_sizes = {3,4,5,6};
 noise_std = 0;
 
 if RECOMPUTE ~= 0
-    disp('Testing RBF 3D');
+     disp('Testing RBF 3D');
     load('data/best_eps/RBF-3D', 'best_eps');
     test_fields('RBF-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
-    
    
     disp('Testing RBF Multiquadric 3D');
     load('data/best_eps/RBF-MQ-3D', 'best_eps');
@@ -43,9 +42,9 @@ output_files = dir('data/fields/*.mat');
 
 close all;
 
-cmap = cbrewer('qual', 'Paired', 9);
-
 Nf = length(output_files);
+cmap = cbrewer('qual', 'Paired', Nf);
+
 mae = zeros(Nf, length(grid_sizes));
 nmae = zeros(Nf, length(grid_sizes));
 rmse = zeros(Nf, length(grid_sizes));
@@ -91,8 +90,11 @@ fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
 colormap(cmap);
 % we sort the by the r2 in the lowest grid resolution
 [~, idx] = sort(r2(:,1), 1);
-bar([results.grid_size], r2(idx,:)', 'grouped');
-%plot([results.grid_size], r2);
+b = bar([results.grid_size], r2(idx,:)', 'grouped');
+% don't forget to also sort the colors so they match the other figure
+for i=1:length(idx)
+    b(i).FaceColor = cmap(idx(i),:);
+end
 ax = fh_r2.CurrentAxes;
 xticks(ax, cell2mat(grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
