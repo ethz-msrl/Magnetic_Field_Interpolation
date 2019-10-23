@@ -72,7 +72,7 @@ classdef FieldInterpolatorEvaluator < handle
             nv = reshape(obj.NodeValues, [], 3);
             nv_ = reshape(obj.FieldsPredicted, [], 3);
             rmse = sqrt(mean((nv - nv_).^2,1));
-            nmse = rmse ./ max(sqrt(sum(nv.^2, 2)));
+            nmse = rmse ./ (max(nv_) - min(nv_));
         end
         
         function [mae] = get_mae(obj)
@@ -87,7 +87,7 @@ classdef FieldInterpolatorEvaluator < handle
             nv = reshape(obj.NodeValues, [], 3);
             nv_ = reshape(obj.FieldsPredicted, [], 3);
             mae = mean(abs(nv - nv_));
-            nmae = mae ./ max(abs(nv));
+            nmae = mae ./ (max(nv_) - min(nv_));
         end
         
         function [fh] = plot_quiver_xy(obj, varargin)

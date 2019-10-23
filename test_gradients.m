@@ -48,6 +48,8 @@ function test_gradients( model_name, grid, noise_std)
 
         mae = zeros(NUM_CURRENTS, 3, 3);
         nmae = zeros(NUM_CURRENTS, 3, 3);
+        rmse = zeros(NUM_CURRENTS, 3, 3);
+        nrmse = zeros(NUM_CURRENTS, 3, 3);
         r2 = zeros(NUM_CURRENTS, 3, 3);
         mean_div = zeros(NUM_CURRENTS, 1);
         mean_curl = zeros(NUM_CURRENTS, 3);
@@ -98,7 +100,11 @@ function test_gradients( model_name, grid, noise_std)
             mean_div(i) = mean(divs(:));
 
             mae(i,:,:) = gradmae(gradients_ev, gradients);
-            nmae(i,:,:) = mae(i,:,:) ./ max(reshape(abs(gradients_ev), [], 3,3),[], 1);
+            nmae(i,:,:) = mae(i,:,:) ./ (max(reshape(abs(gradients_ev), [], 3,3),[], 1) - ...
+            min(reshape(abs(gradients_ev), [], 3,3),[], 1));
+            rmse(i,:,:) = gradrmse(gradients_ev, gradients);
+            nrmse(i,:,:) = rmse(i,:,:) ./ (max(reshape(abs(gradients_ev), [], 3, 3), [], 1) - ...
+                min(reshape(abs(gradients_ev), [], 3, 3), [], 1));
             r2(i,:,:) = gradr2(gradients_ev, gradients);
 
             percent_done = 100 * i / NUM_CURRENTS;
@@ -112,6 +118,8 @@ function test_gradients( model_name, grid, noise_std)
         results(g).grid_size = grid_size;
         results(g).mae = reshape(squeeze(mean(mae,1)), [], 1);
         results(g).nmae = reshape(squeeze(mean(nmae,1)), [], 1);
+        results(g).rmse = reshape(squeeze(mean(rmse,1)), [], 1);
+        results(g).nrmse = reshape(squeeze(mean(nrmse,1)), [], 1);
         results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
         results(g).mean_div = mean(mean_div,1);
         results(g).mean_curl = mean(mean_curl,1);

@@ -1,6 +1,6 @@
 clear all;
 
-RECOMPUTE = 1;
+RECOMPUTE = 0;
 
 grid_sizes = {3,4,5,6};
 noise_std = 0;
@@ -43,7 +43,7 @@ output_files = dir('data/fields/*.mat');
 close all;
 
 Nf = length(output_files);
-cmap = cbrewer('qual', 'Paired', Nf);
+cmap = cbrewer('qual', 'Set1', Nf);
 
 mae = zeros(Nf, length(grid_sizes));
 nmae = zeros(Nf, length(grid_sizes));
@@ -68,29 +68,40 @@ for i=1:Nf
     nrmse(i,:) = mean([results.nrmse]);
     r2(i,:) = mean([results.r2]);
 end
+
+%% nmae
 fh_mae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
 colormap(cmap);
-%plot([results.grid_size], nmae');
-bar([results.grid_size], 100*nmae', 'stacked');
+[~, idx] = sort(nmae(:,1), 1);
+
+b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
+% don't forget to also sort the colors so they match the other figure
+for i=1:length(idx)
+    b(i).FaceColor = cmap(idx(i),:);
+end
 ax = fh_mae.CurrentAxes;
+ax.YGrid = 'on';
+ax.YMinorGrid = 'on';
 
 xticks(ax, cell2mat(grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
-legend(model_names);
+legend(model_names(idx));
 
 set(fh_mae, 'PaperUnits', 'inches');
 set(fh_mae, 'PaperSize', [3.45/2, 2.1]);
 
 export_fig(fh_mae, 'figures/interp_field_nmae.pdf');
 
+%% r2
+
 fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
      'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
 colormap(cmap);
 % we sort the by the r2 in the lowest grid resolution
-[~, idx] = sort(r2(:,1), 1);
-b = bar([results.grid_size], r2(idx,:)', 'grouped');
+[~, idx] = sort(r2(:,1), 1, 'descend');
+b = bar([results.grid_size], r2(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
     b(i).FaceColor = cmap(idx(i),:);
