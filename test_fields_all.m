@@ -7,16 +7,16 @@ noise_std = 0;
 
 if RECOMPUTE ~= 0
      disp('Testing RBF 3D');
-    load('data/best_eps/RBF-3D', 'best_eps');
-    test_fields('RBF-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    load('data/best_eps/RBF-G-3D', 'best_eps');
+    test_fields('RBF-G-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
    
     disp('Testing RBF Multiquadric 3D');
     load('data/best_eps/RBF-MQ-3D', 'best_eps');
     test_fields('RBF-MQ-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
 
     disp('Testing RBF Div-free');
-    load('data/best_eps/RBF-DF', 'best_eps');
-    test_fields('RBF-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    load('data/best_eps/RBF-G-DF', 'best_eps');
+    test_fields('RBF-G-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
 
     disp('Testing RBF Multiquadric Div-free');
     load('data/best_eps/RBF-MQ-DF');
@@ -71,7 +71,7 @@ end
 
 %% nmae
 fh_mae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
-    'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+    'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 colormap(cmap);
 [~, idx] = sort(nmae(:,1), 1);
 
@@ -89,15 +89,15 @@ xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
 legend(model_names(idx));
 
-set(fh_mae, 'PaperUnits', 'inches');
-set(fh_mae, 'PaperSize', [3.45/2, 2.1]);
+%set(fh_mae, 'PaperUnits', 'inches');
+%set(fh_mae, 'PaperSize', [3.45/2, 2.1]);
 
 export_fig(fh_mae, 'figures/interp_field_nmae.pdf');
 
 %% r2
 
 fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
-     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+     'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 8);
 colormap(cmap);
 % we sort the by the r2 in the lowest grid resolution
 [~, idx] = sort(r2(:,1), 1, 'descend');
@@ -113,7 +113,7 @@ ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
 ylim(ax, [min(r2(:))-0.1, 1])
 legend(model_names(idx));
 
-export_fig(fh_r2, 'figures/interp_field_r2.pdf');
+%export_fig(fh_r2, 'figures/interp_field_r2.pdf');
 
 %% Table generation
 input.data = [1000*mae(:,3)'; 100*nmae(:,3)'; 1000*rmse(:,3)'; 100*nrmse(:,3)'; r2(:,3)'];

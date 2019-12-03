@@ -9,6 +9,8 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
 
     % load currents file
     currents = h5read('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/currents_3787.h5', '/currents')';
+    
+    noise_std = 0e-6;
 
     % load positions
     nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');
@@ -52,6 +54,9 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
         for j=1:NUM_CURRENTS
             fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', j)), '/fields');
             fields = permute(fields, [4, 3, 2, 1]);
+            
+            % adding random noise
+            fields = fields + noise_std * randn(size(fields));
 
             fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);

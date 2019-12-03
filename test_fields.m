@@ -61,13 +61,13 @@ function test_fields( model_name, grid, noise_std)
             fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
-            if strcmp(model_name, 'RBF-3D')
+            if strcmp(model_name, 'RBF-G-3D')
                 eps = grid(g).eps;
                 model = RBF3DInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-3D')
                 eps = grid(g).eps;
                 model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'RBF-DF')
+            elseif strcmp(model_name, 'RBF-G-DF')
                 eps = grid(g).eps;
                 model = RBFDivFreeInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-DF')
@@ -109,7 +109,7 @@ function test_fields( model_name, grid, noise_std)
         end
         
         results(g).grid_size = grid_size;
-        results(g).mae = reshape(squeeze(mean(nmae,1)), [], 1);
+        results(g).mae = reshape(squeeze(mean(mae,1)), [], 1);
         results(g).nmae = reshape(squeeze(mean(nmae,1)), [], 1);
         results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
         results(g).rmse = reshape(squeeze(mean(rmse,1)), [], 1);

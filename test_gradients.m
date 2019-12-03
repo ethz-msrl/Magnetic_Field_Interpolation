@@ -64,13 +64,13 @@ function test_gradients( model_name, grid, noise_std)
             gradients_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', i)), '/gradients');
             gradients_ev = permute(gradients_ev, [5, 4, 3, 2, 1]);
 
-            if strcmp(model_name, 'RBF-3D')
+            if strcmp(model_name, 'RBF-G-3D')
                 eps = grid(g).eps;
                 model = RBF3DInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-3D')
                 eps = grid(g).eps;
                 model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
-            elseif strcmp(model_name, 'RBF-DF')
+            elseif strcmp(model_name, 'RBF-G-DF')
                 eps = grid(g).eps;
                 model = RBFDivFreeInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-DF')

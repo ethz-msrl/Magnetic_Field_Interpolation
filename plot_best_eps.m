@@ -1,5 +1,8 @@
 myDir = 'data/best_eps'; %gets directory
 myFiles = dir(fullfile(myDir,'*.mat')); %gets all wav files in struct
+
+cmap = cbrewer('qual', 'Set1', length(myFiles));
+
 fh = figure;
 hold on;
 for k = 1:length(myFiles)
@@ -17,18 +20,13 @@ opt.XLabel = 'Grid Size';
 opt.XMinorTick = 'off';
 opt.YLabel = 'Best Eps';
 opt.Markers = {'o', '+', '*', 'x'};
-opt.BoxDim = [3.45/2, 2.1];
+opt.BoxDim = [4.6, 3.];
 opt.FontName = 'Helvetica';
 opt.AxisLineWidth = 1.5;
-opt.FontSize = 8;
+opt.FontSize = 12;
 opt.LegendLoc = 'NorthWest';
-opt.Colors = [0.882,0.416,0.525;
-          0.722,0.541,0.000;
-          0.314,0.639,0.082;
-          0.000,0.678,0.604;
-          0.000,0.604,0.871;
-          0.784,0.427,0.843;
-          0.882,0.416,0.525];
+opt.Colors = cmap;
+opt.YGrid = 'on';
 
 setPlotProp(opt);
 

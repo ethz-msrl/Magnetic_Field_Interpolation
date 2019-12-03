@@ -9,7 +9,7 @@ noise_std = 0;
 if RECOMPUTE ~= 0
     disp('Testing RBF 3D');
     load('data/best_eps/RBF-3D', 'best_eps');
-    test_gradients('RBF-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_gradients('RBF-G-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
    
     disp('Testing RBF Multiquadric 3D');
     load('data/best_eps/RBF-MQ-3D', 'best_eps');
@@ -17,7 +17,7 @@ if RECOMPUTE ~= 0
 
     disp('Testing RBF Div-free');
     load('data/best_eps/RBF-DF', 'best_eps');
-    test_gradients('RBF-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_gradients('RBF-G-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
 
     disp('Testing RBF Multiquadric Div-free');
     load('data/best_eps/RBF-MQ-DF');
@@ -40,10 +40,8 @@ output_files = dir('data/gradients/*.mat');
 
 close all;
 
-
 Nf = length(output_files);
 cmap = cbrewer('qual', 'Set1', Nf);
-
 
 nmae = zeros(Nf, length(grid_sizes));
 mae = zeros(Nf, length(grid_sizes));
@@ -73,7 +71,7 @@ for i=1:Nf
     mean_curl(i,:) = sqrt(sum(reshape([results.mean_curl],3,4)'.^2,2));
 end
 fh_nmae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
-    'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+    'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 colormap(cmap);
 ax = gca;
 ax.ColorOrder = cmap;
@@ -93,13 +91,13 @@ xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
 legend(model_names(idx));
 
-set(fh_nmae, 'PaperUnits', 'inches');
-set(fh_nmae, 'PaperSize', [3.45/2, 2.1]);
+%set(fh_nmae, 'PaperUnits', 'inches');
+%set(fh_nmae, 'PaperSize', [3.45/2, 2.1]);
 
 export_fig(fh_nmae, 'figures/interp_gradient_nmae.pdf');
 
 fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
-     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+     'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 
 % we sort the by the r2 in the lowest grid resolution
 [~, idx] = sort(r2(:,1), 1, 'descend');
@@ -125,13 +123,13 @@ ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
 ylim(ax, [min(r2(:))-0.1, 1])
 legend(model_names(idx));
 
-export_fig(fh_r2, 'figures/interp_gradient_r2.pdf');
+%export_fig(fh_r2, 'figures/interp_gradient_r2.pdf');
 
 %% div
 idx = abs(mean_div(:,1)) > 1e-12;
 
 fh_md = figure('Name', 'Mean Divergence', 'units', 'inch', ...
-     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+     'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 colormap(cmap);
 bar([results.grid_size], 1000*mean_div(idx,:)', 'grouped', 'EdgeColor','none');
 ax = fh_md.CurrentAxes;
@@ -149,7 +147,7 @@ export_fig(fh_md, 'figures/interp_divergence.pdf');
 idx = abs(mean_curl(:,1)) > 1e-12;
 
 fh_mc = figure('Name', 'Mean Curl Magnitude', 'units', 'inch', ...
-     'position', [0, 0, 3.45, 2.1], 'color', 'w', 'DefaultAxesFontSize', 8);
+     'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 colormap(cmap);
 bar([results.grid_size], 1000*mean_curl(idx,:)', 'grouped', 'EdgeColor','none');
 ax = fh_mc.CurrentAxes;
