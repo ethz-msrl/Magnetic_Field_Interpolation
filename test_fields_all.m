@@ -78,7 +78,7 @@ colormap(cmap);
 b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(idx(i),:);
+    b(i).FaceColor = cmap(i,:);
 end
 ax = fh_mae.CurrentAxes;
 ax.YGrid = 'on';
@@ -100,11 +100,11 @@ fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
      'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 8);
 colormap(cmap);
 % we sort the by the r2 in the lowest grid resolution
-[~, idx] = sort(r2(:,1), 1, 'descend');
+%[~, idx] = sort(r2(:,1), 1, 'descend');
 b = bar([results.grid_size], r2(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(idx(i),:);
+    b(i).FaceColor = cmap(i,:);
 end
 ax = fh_r2.CurrentAxes;
 xticks(ax, cell2mat(grid_sizes));
@@ -113,7 +113,7 @@ ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
 ylim(ax, [min(r2(:))-0.1, 1])
 legend(model_names(idx));
 
-%export_fig(fh_r2, 'figures/interp_field_r2.pdf');
+export_fig(fh_r2, 'figures/interp_field_r2.pdf');
 
 %% Table generation
 input.data = [1000*mae(:,3)'; 100*nmae(:,3)'; 1000*rmse(:,3)'; 100*nrmse(:,3)'; r2(:,3)'];
@@ -126,5 +126,7 @@ input.tableCaption = 'Field interpolation performance results with $n_g = 5$';
 input.tableLabel = 'tab:interp_performance';
 table_mae = latexTable(input);
 
-
-
+%% Color Generation
+colors = containers.Map(model_names(idx), num2cell(cmap', [1,3]));
+save('data/colors', 'colors');
+save('data/idx', 'idx');

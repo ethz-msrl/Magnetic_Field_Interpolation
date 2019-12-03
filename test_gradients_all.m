@@ -40,8 +40,11 @@ output_files = dir('data/gradients/*.mat');
 
 close all;
 
+load('data/colors');
+load('data/idx');
+
 Nf = length(output_files);
-cmap = cbrewer('qual', 'Set1', Nf);
+%cmap = cbrewer('qual', 'Set1', Nf);
 
 nmae = zeros(Nf, length(grid_sizes));
 mae = zeros(Nf, length(grid_sizes));
@@ -72,15 +75,16 @@ for i=1:Nf
 end
 fh_nmae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
     'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
-colormap(cmap);
+%colormap(cmap);
 ax = gca;
-ax.ColorOrder = cmap;
-[~, idx] = sort(nmae(:,1), 1);
+%ax.ColorOrder = cmap;
+%[~, idx] = sort(nmae(:,1), 1);
 
 b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(idx(i),:);
+    %b(i).FaceColor = cmap(idx(i),:);
+    b(i).FaceColor = colors(model_names{idx(i)});
 end
 ax = fh_nmae.CurrentAxes;
 ax.YGrid = 'on';
@@ -100,7 +104,7 @@ fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
      'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
 
 % we sort the by the r2 in the lowest grid resolution
-[~, idx] = sort(r2(:,1), 1, 'descend');
+%[~, idx] = sort(r2(:,1), 1, 'descend');
 % hold on;
 % for i=1:Nf
 %     b = bar([results.grid_size], r2(idx(i),:)');
@@ -110,7 +114,8 @@ fh_r2 = figure('Name', 'Mean R2', 'units', 'inch', ...
 b = bar([results.grid_size], r2(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(idx(i),:);
+    %b(i).FaceColor = cmap(idx(i),:);
+    b(i).FaceColor = colors(model_names{idx(i)});
 end
 
 ax = fh_r2.CurrentAxes;
@@ -123,15 +128,20 @@ ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
 ylim(ax, [min(r2(:))-0.1, 1])
 legend(model_names(idx));
 
-%export_fig(fh_r2, 'figures/interp_gradient_r2.pdf');
+export_fig(fh_r2, 'figures/interp_gradient_r2.pdf');
 
 %% div
-idx = abs(mean_div(:,1)) > 1e-12;
+idx_r = find(abs(mean_div(:,1)) > 1e-12);
 
 fh_md = figure('Name', 'Mean Divergence', 'units', 'inch', ...
      'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
-colormap(cmap);
-bar([results.grid_size], 1000*mean_div(idx,:)', 'grouped', 'EdgeColor','none');
+%colormap(cmap);
+b = bar([results.grid_size], 1000*mean_div(idx_r,:)', 'grouped', 'EdgeColor','none');
+
+for i=1:length(idx_r)
+    b(i).FaceColor = colors(model_names{idx_r(i)});
+end
+
 ax = fh_md.CurrentAxes;
 ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
@@ -139,17 +149,22 @@ ax.YMinorGrid = 'on';
 xticks(ax, cell2mat(grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, 'Mean Divergence (mT/m)', 'Interpreter', 'latex');
-legend(model_names(idx));
+legend(model_names(idx_r));
 
 export_fig(fh_md, 'figures/interp_divergence.pdf');
 
 %% curl
-idx = abs(mean_curl(:,1)) > 1e-12;
+idx_r = find(abs(mean_curl(:,1)) > 1e-12);
 
 fh_mc = figure('Name', 'Mean Curl Magnitude', 'units', 'inch', ...
      'position', [0, 0, 4.6, 3], 'color', 'w', 'DefaultAxesFontSize', 11);
-colormap(cmap);
-bar([results.grid_size], 1000*mean_curl(idx,:)', 'grouped', 'EdgeColor','none');
+%colormap(cmap);
+b = bar([results.grid_size], 1000*mean_curl(idx_r,:)', 'grouped', 'EdgeColor','none');
+
+for i=1:length(idx_r)
+    b(i).FaceColor = colors(model_names{idx_r(i)});
+end
+
 ax = fh_mc.CurrentAxes;
 ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
@@ -158,7 +173,7 @@ xticks(ax, cell2mat(grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 
 ylabel(ax, 'Mean Curl Magnitude (mT/m)', 'Interpreter', 'latex');
-legend(model_names(idx));
+legend(model_names(idx_r));
 
 export_fig(fh_mc, 'figures/interp_curl.pdf');
 
