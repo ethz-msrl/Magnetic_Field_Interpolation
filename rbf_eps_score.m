@@ -17,9 +17,9 @@ function y = rbf_eps_score(nodes_dataset, eps, type)
     zg = h5read(nodes_pos_fn, '/zg');
     
     % normalize positions
-    xg = xg / (max(xg(:)) - min(xg(:)));
-    yg = yg / (max(yg(:)) - min(yg(:)));
-    zg = zg / (max(zg(:)) - min(zg(:)));
+    xg = (xg - min(xg(:))) / (max(xg(:)) - min(xg(:)));
+    yg = (yg - min(yg(:))) / (max(yg(:)) - min(yg(:)));
+    zg = (zg - min(zg(:))) / (max(zg(:)) - min(zg(:)));
 
     xg = permute(xg, [3, 2, 1]);
     yg = permute(yg, [3, 2, 1]);
@@ -39,13 +39,9 @@ function y = rbf_eps_score(nodes_dataset, eps, type)
     zg_ev = h5read(eval_pos_fn, '/zg');
     
     % normalize positions
-    xg_ev = xg_ev / (max(xg_ev(:)) - min(xg_ev(:)));
-    yg_ev = yg_ev / (max(yg_ev(:)) - min(yg_ev(:)));
-    zg_ev = zg_ev / (max(zg_ev(:)) - min(zg_ev(:)));
-    
-%     xg_ev = normalize(xg_ev, 'range',[-1,1]);
-%     yg_ev = normalize(yg_ev, 'range',[-1,1]);
-%     zg_ev = normalize(zg_ev, 'range',[-1,1]);
+    xg_ev = (xg_ev - min(xg_ev(:))) / (max(xg_ev(:)) - min(xg_ev(:)));
+    yg_ev = (yg_ev - min(yg_ev(:))) / (max(yg_ev(:)) - min(yg_ev(:)));
+    zg_ev = (zg_ev - min(zg_ev(:))) / (max(zg_ev(:)) - min(zg_ev(:)));
 
     xg_ev = permute(xg_ev, [3, 2, 1]);
     yg_ev = permute(yg_ev, [3, 2, 1]);
