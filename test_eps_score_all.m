@@ -38,11 +38,11 @@ cmap = cbrewer('qual', 'Set1', 3);
 
 fh = figure;
 colormap(cmap);
-plot(eps_v, scores, '-o', 'LineWidth', 2.0);
+plot(eps_v, scores, '-o', 'LineWidth', 2.0, 'DisplayName', 'N-RMSE');
 ylabel('N-RMSE (%)');
 yyaxis 'right';
 ylabel('condition number');
-semilogy(eps_v, cond_numbers, 'LineWidth', 2.0);
+semilogy(eps_v, cond_numbers, 'LineWidth', 2.0, 'DisplayName', 'Condition number');
 xlabel('Shape Parameter');
 
 opt.XLabel = 'Shape Parameter';
@@ -53,9 +53,8 @@ opt.FontName = 'Helvetica';
 opt.AxisLineWidth = 1.5;
 opt.FontSize = 11;
 opt.Colors = cmap;
-opt.Legend = '';
+%opt.Legend = '';
 
-%opt.FileName = 'figures/best_eps.eps';
 
 setPlotProp(opt, fh);
 
