@@ -7,7 +7,7 @@ temp = split(nodes_dataset, '/');
 temp = regexp(temp{end-1},'_(\d)_', 'tokens');
 grid = str2num(temp{1}{1});
 
-recompute = 1;
+recompute = 0;
 
 if recompute ~= 0
     [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 0, [0.1, 2]);
@@ -31,7 +31,9 @@ end
 %           0.784,0.427,0.843;
 %           0.882,0.416,0.525];
 
-load(sprintf('data/eps_score/RBF-MQ-3D_%d.mat', grid));
+method = 'RBF-MQ-3D';
+data_fn = sprintf('data/eps_score/%s_%d.mat', method, grid);
+load(data_fn);
 cmap = cbrewer('qual', 'Set1', 3);
 
 fh = figure;
@@ -57,4 +59,4 @@ opt.Legend = '';
 
 setPlotProp(opt, fh);
 
-%export_fig(fh, 'figures/eps_score_RBF-MQ-3D.pdf');
+export_fig(fh, sprintf('figures/eps_score_%s_%d.pdf', method, grid));
