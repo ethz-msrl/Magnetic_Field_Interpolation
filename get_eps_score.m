@@ -1,8 +1,14 @@
-function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
+function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, bounds)
+% nodes_dataset: filename of the nodes file to use
 % type 0: Gaussian RBF3D
 % type 1: Multiquadric 3D
 % type 2: Gaussian Div-free
 % type 3: Multiquadric Div-free
+% bounds: an array of two values containing the lower and upper bound of
+% the eps param. It will calculate the score in a linspace array of 20
+% elemnents between the bounds.
+%
+% Always evaluates on the Ng=16 grid from the MPEM synthetic dataset
 
     %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
     EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
@@ -17,6 +23,11 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
     xg = h5read(nodes_pos_fn, '/xg');
     yg = h5read(nodes_pos_fn, '/yg');
     zg = h5read(nodes_pos_fn, '/zg');
+    
+    % normalize positions
+    xg = xg / (max(xg(:)) - min(xg(:)));
+    yg = yg / (max(yg(:)) - min(yg(:)));
+    zg = zg / (max(zg(:)) - min(zg(:)));
 
     xg = permute(xg, [3, 2, 1]);
     yg = permute(yg, [3, 2, 1]);
@@ -34,6 +45,11 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
     xg_ev = h5read(eval_pos_fn, '/xg');
     yg_ev = h5read(eval_pos_fn, '/yg');
     zg_ev = h5read(eval_pos_fn, '/zg');
+    
+    % normalize positions
+    xg_ev = xg_ev / (max(xg_ev(:)) - min(xg_ev(:)));
+    yg_ev = yg_ev / (max(yg_ev(:)) - min(yg_ev(:)));
+    zg_ev = zg_ev / (max(zg_ev(:)) - min(zg_ev(:)));
 
     xg_ev = permute(xg_ev, [3, 2, 1]);
     yg_ev = permute(yg_ev, [3, 2, 1]);
@@ -43,7 +59,7 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type)
 
     NUM_CURRENTS = 10;
 
-    eps_v = linspace(1,50,20);
+    eps_v = linspace(bounds(1), bounds(2), 20);
 
     scores = zeros(length(eps_v), 1);
     cond_numbers = zeros(length(eps_v), 1);

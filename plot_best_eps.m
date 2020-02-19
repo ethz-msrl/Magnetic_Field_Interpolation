@@ -9,6 +9,7 @@ hold on;
 % because setPlotProp stupidly overwrites colors this stores the assigned
 % colors
 c = [];
+%names = {};
 for k = 1:length(myFiles)
   baseFileName = myFiles(k).name;
   [~,name,~] = fileparts(baseFileName);
@@ -17,12 +18,12 @@ for k = 1:length(myFiles)
   data = load(fullFileName);
   plot(data.grids, data.best_eps, 'DisplayName', name, 'Color', colors(name));
   c = [c; colors(name)']; 
+  %names = {names; name};
 end
 legend('show');
 hold off;
 
-
-
+opt = {};
 opt.XLabel = 'Grid Size';
 opt.XMinorTick = 'off';
 opt.YLabel = 'Best Eps';
@@ -34,6 +35,7 @@ opt.FontSize = 12;
 opt.LegendLoc = 'NorthWest';
 opt.Colors = c;
 opt.YGrid = 'on';
+%opt.Legend = names;
 
 setPlotProp(opt);
 

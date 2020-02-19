@@ -1,20 +1,26 @@
 clear all;
-nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
+% MAKE SURE THERE IS A TRAILING SLASH
+nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_5_h5/';
 
-recompute = 0;
+% Grabbing grid number from nodes_dataset
+temp = split(nodes_dataset, '/');
+temp = regexp(temp{end-1},'_(\d)_', 'tokens');
+grid = str2num(temp{1}{1});
+
+recompute = 1;
 
 if recompute ~= 0
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 0);
-    save('data/eps_score/RBF-G-3D_4.mat', 'eps_v', 'scores', 'cond_numbers');
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 0, [0.1, 2]);
+    save(sprintf('data/eps_score/RBF-G-3D_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 1);
-    save('data/eps_score/RBF-MQ-3D_4.mat', 'eps_v', 'scores', 'cond_numbers');
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 1, [0.1, 2]);
+    save(sprintf('data/eps_score/RBF-MQ-3D_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 2);
-    save('data/eps_score/RBF-G-DF_4.mat', 'eps_v', 'scores', 'cond_numbers');
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 2, [0.1, 2]);
+    save(sprintf('data/eps_score/RBF-G-DF_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 3);
-    save('data/eps_score/RBF-MQ-DF_4.mat', 'eps_v', 'scores', 'cond_numbers');
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 3, [0.1, 2]);
+    save(sprintf('data/eps_score/RBF-MQ-DF_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
 end
 
 % colors = [0.882,0.416,0.525;
@@ -25,7 +31,7 @@ end
 %           0.784,0.427,0.843;
 %           0.882,0.416,0.525];
 
-load('data/eps_score/RBF-MQ-3D_4.mat');
+load(sprintf('data/eps_score/RBF-MQ-3D_%d.mat', grid));
 cmap = cbrewer('qual', 'Set1', 3);
 
 fh = figure;
@@ -51,4 +57,4 @@ opt.Legend = '';
 
 setPlotProp(opt, fh);
 
-export_fig(fh, 'figures/eps_score_RBF-MQ-3D.pdf');
+%export_fig(fh, 'figures/eps_score_RBF-MQ-3D.pdf');
