@@ -57,8 +57,6 @@ if strcmp(MODE,'thesis')
     opt.AxisLineWidth = 1.5;
     opt.FontSize = 11;
     opt.Colors = cmap;
-    setPlotProp(opt, fh);
-    export_fig(fh, sprintf('figures/eps_score_%s_%d_thesis.pdf', method, grid));
 else
     % The following options are for IEEE
     opt.XLabel = 'Shape Parameter';
@@ -69,8 +67,8 @@ else
     opt.AxisLineWidth = 1.5;
     opt.FontSize = 6;
     opt.Colors = cmap;
-    setPlotProp(opt, fh);
-    export_fig(fh, sprintf('figures/eps_score_%s_%d_ieee.pdf', method, grid));
 
 end
 
+setPlotProp(opt, fh);
+export_fig(fh, sprintf('figures/eps_score_%s_%d_%s.pdf', method, grid, MODE));

@@ -1,3 +1,5 @@
+MODE = 'ieee';
+
 myDir = 'data/best_eps'; %gets directory
 myFiles = dir(fullfile(myDir,'*.mat')); %gets all wav files in struct
 
@@ -20,19 +22,37 @@ end
 legend('show');
 hold off;
 
-opt = {};
-opt.XLabel = 'Grid Size';
-opt.XMinorTick = 'off';
-opt.YLabel = 'Best Eps';
-opt.Markers = {'o', '+', '*', 'x'};
-opt.BoxDim = [4.6, 3.];
-opt.FontName = 'Helvetica';
-opt.AxisLineWidth = 1.5;
-opt.FontSize = 12;
-opt.LegendLoc = 'NorthWest';
-opt.Colors = c;
-opt.YGrid = 'on';
+if strcmp(MODE, 'thesis')
+    opt = {};
+    opt.XLabel = 'Grid Size';
+    opt.XMinorTick = 'off';
+    opt.YLabel = 'Best Eps';
+    opt.Markers = {'o', '+', '*', 'x'};
+    opt.BoxDim = [4.6, 3.];
+    opt.FontName = 'Helvetica';
+    opt.AxisLineWidth = 1.5;
+    opt.FontSize = 12;
+    opt.LegendLoc = 'NorthWest';
+    opt.Colors = c;
+    opt.YGrid = 'on';
+
+else
+    opt = {};
+    opt.XLabel = 'Grid Size';
+    opt.XMinorTick = 'off';
+    opt.YLabel = 'Best Eps';
+    opt.Markers = {'o', '+', '*', 'x'};
+    opt.BoxDim = [1.75, 1.4];
+    opt.FontName = 'Helvetica';
+    opt.AxisLineWidth = 1.5;
+    opt.FontSize = 6;
+    opt.LegendLoc = 'NorthWest';
+    opt.Colors = c;
+    opt.YGrid = 'on';
+
+
+end
 
 setPlotProp(opt);
 
-export_fig(fh, 'figures/best_eps.pdf');
+export_fig(fh, sprintf('figures/best_eps_%s.pdf', MODE));
