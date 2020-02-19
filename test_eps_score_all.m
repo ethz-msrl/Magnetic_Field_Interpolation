@@ -1,4 +1,6 @@
 clear all;
+MODE = 'thesis';
+
 % MAKE SURE THERE IS A TRAILING SLASH
 nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_5_h5/';
 
@@ -45,17 +47,30 @@ ylabel('condition number');
 semilogy(eps_v, cond_numbers, 'LineWidth', 2.0, 'DisplayName', 'Condition number');
 xlabel('Shape Parameter');
 
-opt.XLabel = 'Shape Parameter';
-opt.YLabel = 'Condition Number';
-opt.Markers = {'+', '*', 'x'};
-opt.BoxDim = [4.6, 3.];
-opt.FontName = 'Helvetica';
-opt.AxisLineWidth = 1.5;
-opt.FontSize = 11;
-opt.Colors = cmap;
-%opt.Legend = '';
+% The following options are for the thesis
+if strcmp(MODE,'thesis')
+    opt.XLabel = 'Shape Parameter';
+    opt.YLabel = 'Condition Number';
+    opt.Markers = {'+', '*', 'x'};
+    opt.BoxDim = [4.6, 3.];
+    opt.FontName = 'Helvetica';
+    opt.AxisLineWidth = 1.5;
+    opt.FontSize = 11;
+    opt.Colors = cmap;
+    setPlotProp(opt, fh);
+    export_fig(fh, sprintf('figures/eps_score_%s_%d_thesis.pdf', method, grid));
+else
+    % The following options are for IEEE
+    opt.XLabel = 'Shape Parameter';
+    opt.YLabel = 'Condition Number';
+    opt.Markers = {'+', '*', 'x'};
+    opt.BoxDim = [1.75, 1.4];
+    opt.FontName = 'Helvetica';
+    opt.AxisLineWidth = 1.5;
+    opt.FontSize = 6;
+    opt.Colors = cmap;
+    setPlotProp(opt, fh);
+    export_fig(fh, sprintf('figures/eps_score_%s_%d_ieee.pdf', method, grid));
 
+end
 
-setPlotProp(opt, fh);
-
-export_fig(fh, sprintf('figures/eps_score_%s_%d.pdf', method, grid));
