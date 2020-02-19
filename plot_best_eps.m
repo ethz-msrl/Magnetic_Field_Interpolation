@@ -19,6 +19,7 @@ for k = 1:length(myFiles)
   plot(data.grids, data.best_eps, 'DisplayName', name, 'Color', colors(name));
   c = [c; colors(name)'];
 end
+
 legend('show');
 hold off;
 
@@ -49,8 +50,7 @@ else
     opt.LegendLoc = 'NorthWest';
     opt.Colors = c;
     opt.YGrid = 'on';
-
-
+    opt.LineWidth = [1.2, 1.2, 1.2, 1.2];
 end
 
 setPlotProp(opt);

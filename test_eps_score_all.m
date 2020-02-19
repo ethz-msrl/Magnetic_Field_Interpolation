@@ -1,5 +1,5 @@
 clear all;
-MODE = 'thesis';
+MODE = 'ieee';
 
 % MAKE SURE THERE IS A TRAILING SLASH
 nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_5_h5/';
@@ -40,11 +40,11 @@ cmap = cbrewer('qual', 'Set1', 3);
 
 fh = figure;
 colormap(cmap);
-plot(eps_v, scores, '-o', 'LineWidth', 2.0, 'DisplayName', 'N-RMSE');
+plot(eps_v, scores, '-o', 'LineWidth', 1.2, 'DisplayName', 'N-RMSE');
 ylabel('N-RMSE (%)');
 yyaxis 'right';
 ylabel('condition number');
-semilogy(eps_v, cond_numbers, 'LineWidth', 2.0, 'DisplayName', 'Condition number');
+semilogy(eps_v, cond_numbers, 'LineWidth', 1.2, 'DisplayName', 'Condition number');
 xlabel('Shape Parameter');
 
 % The following options are for the thesis
@@ -67,6 +67,7 @@ else
     opt.AxisLineWidth = 1.5;
     opt.FontSize = 6;
     opt.Colors = cmap;
+    opt.LineWidth = [1.2,1.2];
 
 end
 
