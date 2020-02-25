@@ -62,10 +62,10 @@ else
     opt.XLabel = 'Shape Parameter';
     opt.YLabel = 'Condition Number';
     opt.Markers = {'+', '*', 'x'};
-    opt.BoxDim = [1.75, 1.4];
+    opt.BoxDim = [1.75, 2.0];
     opt.FontName = 'Helvetica';
     opt.AxisLineWidth = 1.5;
-    opt.FontSize = 6;
+    opt.FontSize = 8;
     opt.Colors = cmap;
     opt.LineWidth = [1.2,1.2];
 
