@@ -1,4 +1,14 @@
-load_gradients_data;
+load_gradient_data;
+
+MODE = 'ieee';
+
+if strcmp(MODE, 'ieee')
+    PAPER_SIZE = [0, 0, 4.6, 2.3];
+    FONT_SIZE = 11;
+else
+    PAPER_SIZE = [0, 0, 3.5, 2.3];
+    FONT_SIZE = 8;
+end
 
 fh_nmae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
     'position', PAPER_SIZE, 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
@@ -64,7 +74,7 @@ idx_r = find(abs(mean_div(:,1)) > 1e-12);
 
 if strcmp(MODE, 'ieee')
     fh_md = figure('Name', 'Mean Divergence', 'units', 'inch', ...
-        'position', [0,0,1.75,2.3], 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
+        'position', [0,0,3.5,2.3], 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
 else
     fh_md = figure('Name', 'Mean Divergence', 'units', 'inch', ...
         'position', PAPER_SIZE, 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
@@ -90,7 +100,7 @@ if strcmp(MODE, 'ieee')
     set(ax.Legend.BoxFace, 'ColorType', 'truecoloralpha', 'ColorData', uint8(255*[1;1;1;.5]));
 end
 
-%export_fig(fh_md, sprintf('figures/interp_divergence_%s.pdf', MODE));
+export_fig(fh_md, sprintf('figures/interp_divergence_%s.pdf', MODE));
 
 %% curl
 idx_r = find(abs(mean_curl(:,1)) > 1e-12);
@@ -98,7 +108,7 @@ idx_r = find(abs(mean_curl(:,1)) > 1e-12);
 if strcmp(MODE, 'ieee')
     subplot(1,2,2);
     fh_mc = figure('Name', 'Mean Curl Magnitude', 'units', 'inch', ...
-        'position', [0,0,1.75,2.3], 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
+        'position', [0,0,3.5,2.3], 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
 else
     fh_mc = figure('Name', 'Mean Curl Magnitude', 'units', 'inch', ...
         'position', PAPER_SIZE, 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);

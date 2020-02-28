@@ -24,6 +24,8 @@ function test_gradients( model_name, grid, noise_std)
         xg = h5read(nodes_pos_fn, '/xg');
         yg = h5read(nodes_pos_fn, '/yg');
         zg = h5read(nodes_pos_fn, '/zg');
+        
+        %[xg, yg, zg, maxp, minp] = normalize_positions_minmax(xg, yg, zg);
 
         xg = permute(xg, [3, 2, 1]);
         yg = permute(yg, [3, 2, 1]);
@@ -37,7 +39,9 @@ function test_gradients( model_name, grid, noise_std)
         xg_ev = h5read(eval_pos_fn, '/xg');
         yg_ev = h5read(eval_pos_fn, '/yg');
         zg_ev = h5read(eval_pos_fn, '/zg');
-
+        
+        %[xg_ev, yg_ev, zg_ev] = normalize_positions_minmax(xg_ev, yg_ev, zg_ev, maxp, minp);
+        
         xg_ev = permute(xg_ev, [3, 2, 1]);
         yg_ev = permute(yg_ev, [3, 2, 1]);
         zg_ev = permute(zg_ev, [3, 2, 1]);
@@ -53,7 +57,8 @@ function test_gradients( model_name, grid, noise_std)
         r2 = zeros(NUM_CURRENTS, 3, 3);
         mean_div = zeros(NUM_CURRENTS, 1);
         mean_curl = zeros(NUM_CURRENTS, 3);
-
+        
+        %divs_all = [];
 
         for i=1:NUM_CURRENTS
             fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
@@ -94,7 +99,10 @@ function test_gradients( model_name, grid, noise_std)
             
             gradients = model.getGradientsAtPositions(positions_ev);
             grads = reshape(gradients,[],9);
-            divs = sum(grads(:,1:3+1:9),2);
+            % we take the mean absolute divergence since positives and
+            % negatives can cancel each other out in the mean
+            divs = abs(sum(grads(:,1:3+1:9),2));
+            %divs_all = [divs_all; divs];
             curls = [grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), grads(:,2) - grads(:,4)];
             mean_curl(i,:) = mean(curls, 1);
             mean_div(i) = mean(divs(:));
@@ -121,6 +129,7 @@ function test_gradients( model_name, grid, noise_std)
         results(g).rmse = reshape(squeeze(mean(rmse,1)), [], 1);
         results(g).nrmse = reshape(squeeze(mean(nrmse,1)), [], 1);
         results(g).r2 = reshape(squeeze(mean(r2,1)), [], 1);
+
         results(g).mean_div = mean(mean_div,1);
         results(g).mean_curl = mean(mean_curl,1);
         
@@ -135,7 +144,7 @@ function test_gradients( model_name, grid, noise_std)
         disp('R2:')
         disp(squeeze(mean(r2, 1)));
 
-        fprintf('Mean divergence: %2.3f (mT/m) \n', 1000*mean(mean_div));
+        fprintf('Mean divergence abs: %2.3f (mT/m) \n', 1000*mean(mean_div));
         temp = 1000*mean(mean_curl,1);
         fprintf('Mean curl: [%2.3f, %2.3f, %2.3f] (mT/m) \n',  temp(1), temp(2), temp(3));
 

@@ -2,7 +2,7 @@ function [ grad ] = tricubic_grad( A, x, y, z )
 %TRICUBICGRAD Calculates the gradient of a tricubic function
 %   Computes the gradient of tricubic numerically.
 xv = kron(kron([3*x^2, 2*x, 1, 0], [y^3, y^2, y, 1]), [z^3, z^2, z, 1])';
-yv = kron(kron([x^3, x^2, x, 1], [3*y^2, 2*y, 1, 0]), [z^2, z^2, z, 1])';
+yv = kron(kron([x^3, x^2, x, 1], [3*y^2, 2*y, 1, 0]), [z^3, z^2, z, 1])';
 zv = kron(kron([x^3, x^2, x, 1], [y^3, y^2, y, 1]), [3*z^2, 2*z, 1, 0])';
 
 % av is the vector arrangement of A which is 4x4x4

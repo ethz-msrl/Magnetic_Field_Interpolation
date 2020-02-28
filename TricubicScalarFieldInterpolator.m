@@ -27,20 +27,24 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             obj.Nx = size(obj.NodePositions, 1);
             obj.Ny = size(obj.NodePositions, 2);
             obj.Nz = size(obj.NodePositions, 3);
+            
+            pmin = min(reshape(obj.NodePositions, [],3),[],1);
+            pmax = max(reshape(obj.NodePositions, [],3),[],1);
+            obj.Steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
+            
             % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
             vg = obj.NodeValues;
             obj.VG = permute(vg, [3,2,1,4]);
+            
+            % here we prescale the interpolation values by the scale
+            obj.VG = obj.VG .* permute(repmat(obj.Steps, [obj.Nx,1,obj.Ny, obj.Nz]), ...
+                [1,3,4,2]);
             
             [obj.dvg_dy, ~, obj.dvg_dz] = gradient(obj.VG);
             [~, ~, obj.dvg_dyz] = gradient(obj.dvg_dy);
             
             getAllCoefficients(obj);
-            
-            pmin = min(reshape(obj.NodePositions, [],3),[],1);
-            pmax = max(reshape(obj.NodePositions, [],3),[],1);
-            obj.Steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
 
- 
         end
         
        function [ix, iy, iz, x, y, z] = getIndices(obj, position)
@@ -53,7 +57,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             x = pn(1) + 1 - ix;
             y = pn(2) + 1 - iy;
             z = pn(3) + 1 - iz;
-        end
+       end
         
         function getAllCoefficients(obj)
             obj.Coefs = zeros(obj.Nx-1, obj.Ny-1, obj.Nz-1, 64);
@@ -111,6 +115,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
                             ]);
 
                         %a_sol = obj.M(9:32,:) \ D(9:32,:);
+                        %a_sol = obj.M(32:end,:) \ D(32:end,:);
                         a_sol = obj.M \ D;
                         obj.Coefs(ix, iy, iz, :, :) = [0;a_sol];
                     end
@@ -121,17 +126,34 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         function field = getFieldAtPosition(obj, position)
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
-            field = -tricubic_grad(A_sol, xe, ye, ze);
+            %field = -tricubic_grad(A_sol, xe, ye, ze);
+            field = -tricubic_grad(A_sol, xe, ye, ze) ./ obj.Steps';
         end
         
         function gradient = getGradientAtPosition(obj, position)
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
             H = -tricubic_hess(A_sol, xe, ye, ze);
-%             gradient = H;
-            gradient = [H(1,:)/obj.Steps(1); ...
-                H(2,:)/obj.Steps(2); ...
-                H(3,:)/obj.Steps(3)];
+            %gradient = H;
+           
+            gradient =  H ./ (obj.Steps'.* obj.Steps);
+            %gradient = [H(1,:)/obj.Steps(1); ...
+%                 H(2,:)/obj.Steps(2); ...
+%                 H(3,:)/obj.Steps(3)];
+        end
+        
+        function gradient = getGradientAtPositionNumeric(obj, position)
+            eps = 1e-6;
+            f0 = getFieldAtPosition(obj, position);
+            p_ = position + [eps, 0, 0];
+            d_dx = (getFieldAtPosition(obj, p_) - f0) / eps;
+            p_ = position + [0, eps, 0];
+            d_dy = (getFieldAtPosition(obj, p_) - f0) / eps;
+            p_ = position + [0, 0, eps];
+            d_dz = (getFieldAtPosition(obj, p_) - f0) / eps;
+            
+            gradient = [d_dx, d_dy, d_dz];
+            
         end
         
         function normalized = getNormalizedPositions(obj, positions)
@@ -139,7 +161,30 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             pmin = min(reshape(obj.NodePositions, [],3),[],1);
             normalized = reshape((pm - pmin) ./ obj.Steps, size(positions));
         end
+        
+        function field = getFieldAtPostionNumeric(obj, position)
+            eps = 1e-6;
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            f0 = tricubic(A_sol, xe, ye, ze);
+            
+            p_ = position + [eps, 0, 0];
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(p_);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            dphi_dx = tricubic(A_sol, xe, ye, ze);
+            
+            p_ = position + [0, eps, 0];
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(p_);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            dphi_dy = tricubic(A_sol, xe, ye, ze);
+            
+            p_ = position + [0, 0, eps];
+            [ix, iy, iz, xe, ye, ze] = obj.getIndices(p_);
+            A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            dphi_dz = tricubic(A_sol, xe, ye, ze);
+            
+            field =  (-[dphi_dx; dphi_dy; dphi_dz] + f0) / eps;
+        end
     end
-    
 end
 
