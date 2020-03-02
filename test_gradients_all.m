@@ -1,6 +1,6 @@
 clear all;
 
-RECOMPUTE = 0;
+RECOMPUTE = 1;
 
 grid_sizes = {3,4,5,6};
 

@@ -56,7 +56,7 @@ function test_gradients( model_name, grid, noise_std)
         nrmse = zeros(NUM_CURRENTS, 3, 3);
         r2 = zeros(NUM_CURRENTS, 3, 3);
         mean_div = zeros(NUM_CURRENTS, 1);
-        mean_curl = zeros(NUM_CURRENTS, 3);
+        mean_curl = zeros(NUM_CURRENTS, 1);
         
         %divs_all = [];
 
@@ -103,8 +103,10 @@ function test_gradients( model_name, grid, noise_std)
             % negatives can cancel each other out in the mean
             divs = abs(sum(grads(:,1:3+1:9),2));
             %divs_all = [divs_all; divs];
-            curls = [grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), grads(:,2) - grads(:,4)];
-            mean_curl(i,:) = mean(curls, 1);
+            % we take the magnitude of the curl vector
+            curls = vecnorm([grads(:,6) - grads(:,8), grads(:,7) - grads(:,3), ...
+                grads(:,2) - grads(:,4)], 2, 2);
+            mean_curl(i) = mean(curls, 1);
             mean_div(i) = mean(divs(:));
 
             mae(i,:,:) = gradmae(gradients_ev, gradients);
@@ -146,7 +148,7 @@ function test_gradients( model_name, grid, noise_std)
 
         fprintf('Mean divergence abs: %2.3f (mT/m) \n', 1000*mean(mean_div));
         temp = 1000*mean(mean_curl,1);
-        fprintf('Mean curl: [%2.3f, %2.3f, %2.3f] (mT/m) \n',  temp(1), temp(2), temp(3));
+        fprintf('Mean curl magnitude: %2.3f (mT/m) \n',  temp(1), temp(2), temp(3));
 
         fprintf('\n\n');
 
