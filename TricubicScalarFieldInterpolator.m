@@ -116,6 +116,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
 
                         %a_sol = obj.M(9:32,:) \ D(9:32,:);
                         %a_sol = obj.M(32:end,:) \ D(32:end,:);
+                        %a_sol = obj.M(1:56,:) \ D(1:56,:);
                         a_sol = obj.M \ D;
                         obj.Coefs(ix, iy, iz, :, :) = [0;a_sol];
                     end
@@ -143,6 +144,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         end
         
         function gradient = getGradientAtPositionNumeric(obj, position)
+            % used this to make sure the analytical gradient is correct
             eps = 1e-6;
             f0 = getFieldAtPosition(obj, position);
             p_ = position + [eps, 0, 0];
@@ -163,6 +165,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         end
         
         function field = getFieldAtPostionNumeric(obj, position)
+            % used this to make sure the analytical gradient is correct
             eps = 1e-6;
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);

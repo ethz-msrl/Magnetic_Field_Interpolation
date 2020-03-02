@@ -26,8 +26,8 @@ ax.FontSize = FONT_SIZE;
 
 xticks(ax, cell2mat(grid_sizes));
 xlabel(ax, 'Grid Size $N_g$', 'Interpreter', 'latex');
-ylabel(ax, '$\nabla \cdot \mathbf{b}$ (mT/m)', 'Interpreter', 'latex');
-title('Mean Divergence');
+ylabel(ax, '$ | \nabla \cdot \mathbf{b} |$ (mT/m)', 'Interpreter', 'latex');
+title('Mean Absolute Divergence');
 
 %legend(model_names(idx_r));
 

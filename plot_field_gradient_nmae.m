@@ -20,7 +20,7 @@ colormap(cmap);
 b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(i,:);
+    b(i).FaceColor = colors(model_names{idx(i)});
 end
 
 ax.YGrid = 'on';

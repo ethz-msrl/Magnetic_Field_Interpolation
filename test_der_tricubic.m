@@ -1,3 +1,7 @@
+%% This script is to test that the derivatives of the tribubic interpolator
+% are calculated correctly. We compute the derivatives using an analytical
+% expression and calculate them with numerical derivatives and compare
+
 A = rand(4,4,4);
 
 eps = 1e-8;
