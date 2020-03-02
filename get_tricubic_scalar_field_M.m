@@ -74,9 +74,9 @@ function [M] = get_tricubic_scalar_field_M()
         -gradz(1,1,1) == 0,
         ];
 
-    Bx_y = symfun(diff(gradx, y), [x y z]);
-    Bx_z = symfun(diff(gradx, z), [x y z]);
-    By_z = symfun(diff(grady, z), [x y z]);
+    Bx_y = symfun(diff(-gradx, y), [x y z]);
+    Bx_z = symfun(diff(-gradx, z), [x y z]);
+    By_z = symfun(diff(-grady, z), [x y z]);
 
     Gxyz = symfun(diff(Bx_y, z), [x y z]);
 
