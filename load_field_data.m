@@ -1,19 +1,18 @@
-output_files = dir('data/fields/*.mat');
+output_files = dir(sprintf('%s/fields/*.mat', options.data_base_path));
 
 load('data/colors');
 load('data/idx');
-load('data/grid_sizes');
 
 Nf = length(output_files);
 cmap = cbrewer('qual', 'Set1', Nf);
 
-mae = zeros(Nf, length(grid_sizes));
-nmae = zeros(Nf, length(grid_sizes));
-rmse = zeros(Nf, length(grid_sizes));
-nrmse = zeros(Nf, length(grid_sizes));
-r2 = zeros(Nf, length(grid_sizes));
-mean_div = zeros(Nf, length(grid_sizes));
-mean_curl = zeros(Nf, length(grid_sizes));
+mae = zeros(Nf, length(options.grid_sizes));
+nmae = zeros(Nf, length(options.grid_sizes));
+rmse = zeros(Nf, length(options.grid_sizes));
+nrmse = zeros(Nf, length(options.grid_sizes));
+r2 = zeros(Nf, length(options.grid_sizes));
+mean_div = zeros(Nf, length(options.grid_sizes));
+mean_curl = zeros(Nf, length(options.grid_sizes));
 model_names = {};
 for i=1:Nf
     filename = fullfile(output_files(i).folder, output_files(i).name);

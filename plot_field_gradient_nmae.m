@@ -1,9 +1,8 @@
 clear variables;
 close all;
+settings;
 
-MODE = 'ieee';
-
-if strcmp(MODE, 'ieee')
+if strcmp(options.plot_mode, 'ieee')
     FONT_SIZE = 8;
 else
     FONT_SIZE = 11;
@@ -27,7 +26,7 @@ ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
 ax.FontSize = FONT_SIZE;
 
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $N_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
 title('Magnetic Field');
@@ -50,12 +49,12 @@ ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
 ax.FontSize = FONT_SIZE;
 
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $N_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
 title('Magnetic Field Gradient');
 
-% if strcmp(MODE, 'ieee') 
+% if strcmp(options.plot_mode, 'ieee') 
 %     set(fh_nmae, 'PaperUnits', 'inches');
 %     set(fh_nmae, 'PaperSize', [3.45, 2.1]);
 % end
@@ -63,4 +62,4 @@ title('Magnetic Field Gradient');
 set(fh_nmae, 'PaperUnits', 'inches');
 set(fh_nmae, 'PaperSize', [7, 2.1]);
 
-export_fig(fh_nmae, sprintf('figures/interp_field_gradient_nmae_%s.pdf', MODE));
+export_fig(fh_nmae, sprintf('figures/interp_field_gradient_nmae_%s.pdf', options.plot_mode));

@@ -1,15 +1,12 @@
 clear variables;
 close all;
 
-MODE = 'ieee';
-FONT_SIZE = 8;
-
 load_gradient_data;
 
 idx_r = find(abs(mean_div(:,1)) > 1e-12);
 
 fh = figure('Name', 'Mean Divergence and Curl', 'units', 'inch', ...
-    'position', [0,0,7,2.1], 'color', 'w', 'DefaultAxesFontSize', FONT_SIZE);
+    'position', [0,0,7,2.1], 'color', 'w', 'DefaultAxesFontSize', options.ieee_font_size);
 
 ax = subplot(1,2,1);
 
@@ -22,16 +19,16 @@ end
 
 ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
-ax.FontSize = FONT_SIZE;
+ax.FontSize = options.ieee_font_size;
 
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $N_g$', 'Interpreter', 'latex');
 ylabel(ax, '$ | \nabla \cdot \mathbf{b} |$ (mT/m)', 'Interpreter', 'latex');
 title('Mean Absolute Divergence');
 
 %legend(model_names(idx_r));
 
-% if strcmp(MODE, 'ieee')
+% if strcmp(options.plot_mode, 'ieee')
 %     set(ax.Legend.BoxFace, 'ColorType', 'truecoloralpha', 'ColorData', uint8(255*[1;1;1;.5]));
 % end
 
@@ -50,15 +47,15 @@ end
 
 ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
-ax.FontSize = FONT_SIZE;
+ax.FontSize = options.ieee_font_size;
 
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $N_g$', 'Interpreter', 'latex');
 ylabel(ax, '$\| \nabla \times \mathbf{b} \|$ (mT/m)', 'Interpreter', 'latex');
 title('Mean Curl Magnitude');
 %legend(model_names(idx_r));
 
-% if strcmp(MODE, 'ieee')
+% if strcmp(options.plot_mode, 'ieee')
 %     set(ax.Legend.BoxFace, 'ColorType', 'truecoloralpha', 'ColorData', uint8(255*[1;1;1;.5]));
 % end
 

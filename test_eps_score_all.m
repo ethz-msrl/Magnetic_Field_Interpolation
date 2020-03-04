@@ -1,75 +1,27 @@
 clear all;
-MODE = 'ieee';
+load_settings;
 
 % MAKE SURE THERE IS A TRAILING SLASH
-nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_5_h5/';
+% we use grid size of 5
+
+nodes_dataset = sprintf(options.base_dataset, options.rbf_eps_grid);
 
 % Grabbing grid number from nodes_dataset
-temp = split(nodes_dataset, '/');
-temp = regexp(temp{end-1},'_(\d)_', 'tokens');
-grid = str2num(temp{1}{1});
+% temp = split(nodes_dataset, '/');
+% temp = regexp(temp{end-1},'_(\d)_', 'tokens');
+% grid = str2num(temp{1}{1});
 
-recompute = 0;
-
-if recompute ~= 0
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 0, [0.1, 2]);
+if options.recompute ~= 0
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 0, [0.1, 2], options);
     save(sprintf('data/eps_score/RBF-G-3D_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 1, [0.1, 2]);
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 1, [0.1, 2], options);
     save(sprintf('data/eps_score/RBF-MQ-3D_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 2, [0.1, 2]);
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 2, [0.1, 2], options);
     save(sprintf('data/eps_score/RBF-G-DF_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
     
-    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 3, [0.1, 2]);
+    [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, 3, [0.1, 2], options);
     save(sprintf('data/eps_score/RBF-MQ-DF_%d.mat', grid), 'eps_v', 'scores', 'cond_numbers');
 end
 
-% colors = [0.882,0.416,0.525;
-%           0.722,0.541,0.000;
-%           0.314,0.639,0.082;
-%           0.000,0.678,0.604;
-%           0.000,0.604,0.871;
-%           0.784,0.427,0.843;
-%           0.882,0.416,0.525];
-
-method = 'RBF-MQ-3D';
-data_fn = sprintf('data/eps_score/%s_%d.mat', method, grid);
-load(data_fn);
-cmap = cbrewer('qual', 'Set1', 3);
-
-fh = figure;
-colormap(cmap);
-plot(eps_v, scores, '-o', 'LineWidth', 1.2, 'DisplayName', 'N-RMSE');
-ylabel('N-RMSE (%)');
-yyaxis 'right';
-ylabel('condition number');
-semilogy(eps_v, cond_numbers, 'LineWidth', 1.2, 'DisplayName', 'Condition number');
-xlabel('Shape Parameter');
-
-% The following options are for the thesis
-if strcmp(MODE,'thesis')
-    opt.XLabel = 'Shape Parameter';
-    opt.YLabel = 'Condition Number';
-    opt.Markers = {'+', '*', 'x'};
-    opt.BoxDim = [4.6, 3.];
-    opt.FontName = 'Helvetica';
-    opt.AxisLineWidth = 1.5;
-    opt.FontSize = 11;
-    opt.Colors = cmap;
-else
-    % The following options are for IEEE
-    opt.XLabel = 'Shape Parameter';
-    opt.YLabel = 'Condition Number';
-    opt.Markers = {'+', '*', 'x'};
-    opt.BoxDim = [1.75, 2.0];
-    opt.FontName = 'Helvetica';
-    opt.AxisLineWidth = 1.5;
-    opt.FontSize = 8;
-    opt.Colors = cmap;
-    opt.LineWidth = [1.2,1.2];
-
-end
-
-setPlotProp(opt, fh);
-export_fig(fh, sprintf('figures/eps_score_%s_%d_%s.pdf', method, grid, MODE));

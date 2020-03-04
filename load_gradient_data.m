@@ -1,18 +1,19 @@
-output_files = dir('data/gradients/*.mat');
+load_settings;
+
+output_files = dir(sprintf('%s/gradients/*.mat', options.data_base_path));
 
 load('data/colors');
 load('data/idx');
-load('data/grid_sizes');
 
 Nf = length(output_files);
 
-nmae = zeros(Nf, length(grid_sizes));
-mae = zeros(Nf, length(grid_sizes));
-rmse = zeros(Nf, length(grid_sizes));
-nrmse = zeros(Nf, length(grid_sizes));
-r2 = zeros(Nf, length(grid_sizes));
-mean_div = zeros(Nf, length(grid_sizes));
-mean_curl = zeros(Nf, length(grid_sizes));
+nmae = zeros(Nf, length(options.grid_sizes));
+mae = zeros(Nf, length(options.grid_sizes));
+rmse = zeros(Nf, length(options.grid_sizes));
+nrmse = zeros(Nf, length(options.grid_sizes));
+r2 = zeros(Nf, length(options.grid_sizes));
+mean_div = zeros(Nf, length(options.grid_sizes));
+mean_curl = zeros(Nf, length(options.grid_sizes));
 model_names = {};
 
 for i=1:Nf

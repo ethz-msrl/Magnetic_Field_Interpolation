@@ -1,14 +1,11 @@
-function y = rbf_eps_score(nodes_dataset, eps, type)
+function y = rbf_eps_score(nodes_dataset, eps, type, options)
 % type 0: Gaussian RBF3D
 % type 1: Multiquadric 3D
 % type 2: Gaussian Div-free
 % type 3: Multiquadric Div-free
 
-    %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
-    EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
-
     % load currents file
-    currents = h5read('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/currents_3787.h5', '/currents')';
+    currents = h5read(options.currents_dataset, '/currents')';
 
     % load positions
     nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');
@@ -29,7 +26,7 @@ function y = rbf_eps_score(nodes_dataset, eps, type)
     nodes = cat(4, xg, yg, zg);
 
     % load positions
-    eval_pos_fn = fullfile(EVAL_DATASET,'/positions.h5');
+    eval_pos_fn = fullfile(options.eval_dataset,'/positions.h5');
 
     xg_ev = h5read(eval_pos_fn, '/xg');
     yg_ev = h5read(eval_pos_fn, '/yg');
@@ -47,11 +44,11 @@ function y = rbf_eps_score(nodes_dataset, eps, type)
     NUM_CURRENTS = 5;
 
     nrmse_scores = zeros(NUM_CURRENTS, 3);
-    for j=1:NUM_CURRENTS
+    for j=1:options.num_currents
         fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', j)), '/fields');
         fields = permute(fields, [4, 3, 2, 1]);
 
-        fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
+        fields_ev = h5read(fullfile(options.eval_dataset, 'v', sprintf('%04d.h5', j)), '/fields');
         fields_ev = permute(fields_ev, [4, 3, 2, 1]);
         
         if type == 0

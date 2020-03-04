@@ -9,13 +9,13 @@ colormap(cmap);
 b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(i,:);
+    b(i).FaceColor = colors(model_names{idx(i)});
 end
 ax = fh_mae.CurrentAxes;
 ax.YGrid = 'on';
 ax.YMinorGrid = 'on';
 
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, 'N-MAE (\%)', 'Interpreter', 'latex');
 legend(model_names(idx));
@@ -35,10 +35,10 @@ colormap(cmap);
 b = bar([results.grid_size], r2(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
 for i=1:length(idx)
-    b(i).FaceColor = cmap(i,:);
+    b(i).FaceColor = colors(model_names{idx(i)});
 end
 ax = fh_r2.CurrentAxes;
-xticks(ax, cell2mat(grid_sizes));
+xticks(ax, cell2mat(options.grid_sizes));
 xlabel(ax, 'Grid Size $n_g$', 'Interpreter', 'latex');
 ylabel(ax, '$R^2$ ', 'Interpreter', 'latex');
 ylim(ax, [min(r2(:))-0.1, 1])

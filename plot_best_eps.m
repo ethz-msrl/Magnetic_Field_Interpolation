@@ -1,6 +1,6 @@
-MODE = 'ieee';
+load_settings;
 
-myDir = 'data/best_eps'; %gets directory
+myDir = sprintf('%s/best_eps', options.data_base_path); %gets directory
 myFiles = dir(fullfile(myDir,'*.mat')); %gets all wav files in struct
 
 load('data/colors.mat');
@@ -23,7 +23,7 @@ end
 legend('show');
 hold off;
 
-if strcmp(MODE, 'thesis')
+if strcmp(options.plot_mode, 'thesis')
     opt = {};
     opt.XLabel = 'Grid Size';
     opt.XMinorTick = 'off';
@@ -32,7 +32,7 @@ if strcmp(MODE, 'thesis')
     opt.BoxDim = [4.6, 3.];
     opt.FontName = 'Helvetica';
     opt.AxisLineWidth = 1.5;
-    opt.FontSize = 12;
+    opt.FontSize = options.thesis_font_size;
     opt.LegendLoc = 'NorthWest';
     opt.Colors = c;
     opt.YGrid = 'on';
@@ -46,7 +46,7 @@ else
     opt.BoxDim = [1.75, 2.0];
     opt.FontName = 'Helvetica';
     opt.AxisLineWidth = 1.5;
-    opt.FontSize = 8;
+    opt.FontSize = options.ieee_font_size;
     opt.LegendLoc = 'NorthWest';
     opt.Colors = c;
     opt.YGrid = 'on';
@@ -55,4 +55,4 @@ end
 
 setPlotProp(opt);
 
-export_fig(fh, sprintf('figures/best_eps_%s.pdf', MODE));
+export_fig(fh, sprintf('figures/best_eps_%s.pdf', options.plot_mode));

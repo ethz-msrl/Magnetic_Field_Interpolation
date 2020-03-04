@@ -1,32 +1,29 @@
 clear all;
 
-RECOMPUTE = 0;
+load_settings;
 
-grid_sizes = {3,4,5,6};
-noise_std = 0;
-
-if RECOMPUTE ~= 0
+if options.recompute ~= 0
     disp('Testing RBF 3D');
     load('data/best_eps/RBF-G-3D', 'best_eps');
-    test_fields('RBF-G-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_fields('RBF-G-3D', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
    
     disp('Testing RBF Multiquadric 3D');
     load('data/best_eps/RBF-MQ-3D', 'best_eps');
-    test_fields('RBF-MQ-3D', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_fields('RBF-MQ-3D', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
 
     disp('Testing RBF Div-free');
     load('data/best_eps/RBF-G-DF', 'best_eps');
-    test_fields('RBF-G-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_fields('RBF-G-DF', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
 
     disp('Testing RBF Multiquadric Div-free');
     load('data/best_eps/RBF-MQ-DF');
-    test_fields('RBF-MQ-DF', struct('size', grid_sizes, 'eps', num2cell(best_eps(1:length(grid_sizes)))), noise_std);
+    test_fields('RBF-MQ-DF', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
 
     disp('Testing Tricubic 3D');
-    test_fields('TRI-3D', struct('size', grid_sizes), noise_std);
+    test_fields('TRI-3D', struct('size', options.grid_sizes), options);
 
     disp('Testing Scalar Field Tricubic');
-    test_fields('TRI-LPL', struct('size', grid_sizes), noise_std);
+    test_fields('TRI-LPL', struct('size', options.grid_sizes), options);
 
 %     disp('Testing Divergence Free Tricubic');
 %     test_fields('TRI-DF', struct('size', grid_sizes), noise_std);
@@ -34,10 +31,10 @@ if RECOMPUTE ~= 0
     % Using a degree equal to the grid size appears to work best for some
     % reason
     disp('Testing 3D BSpline');
-    test_fields('SPL-3D', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
+    test_fields('SPL-3D', struct('size', options.grid_sizes, 'degree', options.bspline_degrees), options);
 
     disp('Testing Laplacian BSpline');
-    test_fields('SPL-LPL', struct('size', grid_sizes, 'degree', {3, 4, 5, 6}), noise_std);
+    test_fields('SPL-LPL', struct('size', options.grid_sizes, 'degree', options.bspline_degrees), options);
 end
 
 %% Color Generation
