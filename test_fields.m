@@ -79,7 +79,7 @@ function test_fields( model_name, grid, options)
             if strcmp(model_name, 'RBF-G-3D')
                 % the shape parameter of the RBF
                 eps = grid(g).eps;
-                model = RBF3DInterpolator(nodes, fields, eps);
+                model = RBF3DGaussianInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-3D')
                 % the shape parameter of the RBF
                 eps = grid(g).eps;
@@ -87,7 +87,7 @@ function test_fields( model_name, grid, options)
             elseif strcmp(model_name, 'RBF-G-DF')
                 % the shape parameter of the RBF
                 eps = grid(g).eps;
-                model = RBFDivFreeInterpolator(nodes, fields, eps);
+                model = RBFDivFreeGaussianInterpolator(nodes, fields, eps);
             elseif strcmp(model_name, 'RBF-MQ-DF')
                 % the shape parameter of the RBF
                 eps = grid(g).eps;

@@ -1,4 +1,4 @@
-classdef RBF3DInterpolator < FieldInterpolator
+classdef RBF3DGaussianInterpolator < FieldInterpolator
     %SIMPLERBFINTERPOLATOR Interpolates a 3D vector field by creating a Gaussian RBF
     %   for each dimension
     %   B_i = sum_i^N c_i * exp(-eps * ||pos - node_i||^2)
@@ -13,7 +13,7 @@ classdef RBF3DInterpolator < FieldInterpolator
     end
     
     methods
-        function obj = RBF3DInterpolator(nodes, values, eps)
+        function obj = RBF3DGaussianInterpolator(nodes, values, eps)
             % Constructor
             %   Args:
             %           nodes (4D array): the node positions.
@@ -32,21 +32,21 @@ classdef RBF3DInterpolator < FieldInterpolator
             
             obj.NodeValues = reshape(values, [], 3);
             obj.Eps = eps;
-            [obj.Coefs, obj.CondNumber] = get_rbf_coefficients(obj.NodePositions, obj.NodeValues, eps);
+            [obj.Coefs, obj.CondNumber] = get_gaussian_rbf_coefficients(obj.NodePositions, obj.NodeValues, eps);
         end
         
         function field = getFieldAtPosition(obj, position)
             [position(1), position(2), position(3)] = ...
                 normalize_positions_minmax(position(1), position(2), position(3), ...
                 obj.Maxp, obj. Minp);
-            field = evaluate_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
+            field = evaluate_gaussian_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
         end
         
         function gradient = getGradientAtPosition(obj, position)
             [position(1), position(2), position(3)] = ...
                 normalize_positions_minmax(position(1), position(2), position(3), ...
                 obj.Maxp, obj. Minp);
-            [~, gradient] = evaluate_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
+            [~, gradient] = evaluate_gaussian_rbf(position, obj.NodePositions, obj.Eps, obj.Coefs);
             % since we scaled positions by max - min, we need to also scale
             % the gradient
             gradient = gradient ./ repmat(obj.Maxp - obj.Minp, 3, 1);

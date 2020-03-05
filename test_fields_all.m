@@ -3,7 +3,7 @@ clear all;
 load_settings;
 
 if options.recompute ~= 0
-    disp('Testing RBF 3D');
+    disp('Testing RBF Gaussian 3D');
     load('data/best_eps/RBF-G-3D', 'best_eps');
     test_fields('RBF-G-3D', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
    
@@ -11,7 +11,7 @@ if options.recompute ~= 0
     load('data/best_eps/RBF-MQ-3D', 'best_eps');
     test_fields('RBF-MQ-3D', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
 
-    disp('Testing RBF Div-free');
+    disp('Testing RBF Gaussian Div-free');
     load('data/best_eps/RBF-G-DF', 'best_eps');
     test_fields('RBF-G-DF', struct('size', options.grid_sizes, 'eps', num2cell(best_eps(1:length(options.grid_sizes)))), options);
 

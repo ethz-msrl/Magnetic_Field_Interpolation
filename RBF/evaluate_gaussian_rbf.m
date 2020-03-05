@@ -1,4 +1,4 @@
-function [ output, gradient ] = evaluate_rbf( position, nodes, eps, C )
+function [ output, gradient ] = evaluate_gaussian_rbf( position, nodes, eps, C )
 %EVALUTE_RBF Evaluates the value of a 3D radial basis function
 %with a Gaussian kernel
 %

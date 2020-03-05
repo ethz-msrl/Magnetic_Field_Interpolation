@@ -1,4 +1,4 @@
-function [ output ] = evaluate_divfree_rbf( position, nodes, eps, C )
+function [ output ] = evaluate_divfree_gaussian_rbf( position, nodes, eps, C )
 %EVALUTE_DIVFREE_RBF Evaluates the value of a 3D divergence-free radial basis
 %function with a Gaussian kernel
 %

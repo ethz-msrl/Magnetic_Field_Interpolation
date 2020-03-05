@@ -1,4 +1,4 @@
-function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, bounds, options)
+function [eps_v, scores, cond_numbers] = test_eps_score(nodes_dataset, type, bounds, options)
 % nodes_dataset: filename of the nodes file to use
 % type 0: Gaussian RBF3D
 % type 1: Multiquadric 3D
@@ -65,11 +65,11 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, boun
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
             if type == 0
-                model = RBF3DInterpolator(nodes, fields, eps);
+                model = RBF3DGaussianInterpolator(nodes, fields, eps);
             elseif type == 1
                 model = RBF3DMultiquadricInterpolator(nodes, fields, eps);
             elseif type == 2
-                model = RBFDivFreeInterpolator(nodes, fields, eps);
+                model = RBFDivFreeGaussianInterpolator(nodes, fields, eps);
             else
                 model = RBFDivFreeMultiquadricInterpolator(nodes, fields, eps);
             end
