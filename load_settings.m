@@ -2,7 +2,7 @@ options = struct();
 
 % the number of currents that are picked randomly from the dataset
 % to form the evaluation set
-options.num_currents = 20;
+options.num_currents = 100;
 
 % the standard deviation of some normal noise to add to the true references
 % leave at 0 for no noise added
@@ -26,8 +26,9 @@ options.print_progress = 1;
 
 % if this is set to 1, it will recompute all the values
 % this takes quite a while
-options.recompute = 1;
+options.recompute = 0;
 
+% these are the grid sizes used in the field and gradient experiments
 options.grid_sizes = {3,4,5,6};
 
 % needs to be same size as grid_sizes

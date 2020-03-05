@@ -1,6 +1,6 @@
 clear variables;
 close all;
-settings;
+load_settings;
 
 if strcmp(options.plot_mode, 'ieee')
     FONT_SIZE = 8;

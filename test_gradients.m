@@ -168,7 +168,7 @@ for g=1:length(grid)
         
         fprintf('Mean divergence abs: %2.3f (mT/m) \n', 1000*mean(mean_div));
         temp = 1000*mean(mean_curl,1);
-        fprintf('Mean curl magnitude: %2.3f (mT/m) \n',  temp(1), temp(2), temp(3));
+        fprintf('Mean curl magnitude: %2.3f (mT/m) \n',  temp);
         
         fprintf('\n\n');
     end
@@ -176,7 +176,7 @@ for g=1:length(grid)
 end
 
 save_fn = sprintf('%s/gradients/%s_%d.mat', options.data_base_path,...
-    model_name, noise_std);
+    model_name, options.noise_std);
 save(save_fn, 'results');
 end
 

@@ -31,5 +31,5 @@ for i=1:Nf
     nrmse(i,:) = mean([results.nrmse]);
     r2(i,:) = mean([results.r2]);
     mean_div(i,:) = [results.mean_div];
-    mean_curl(i,:) = sqrt(sum(reshape([results.mean_curl],3,4)'.^2,2));
+    mean_curl(i,:) = [results.mean_curl];
 end
