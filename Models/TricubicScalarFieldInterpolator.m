@@ -5,6 +5,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
     %   The magnetic field at the voxel corners, as well as dbx/dy dbx/dz
     %   dfy/dz d2fx/dydz are constrained at the corners. the laplacian is
     %   also constrained to be 0 at the voxel corners
+    %
     %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)

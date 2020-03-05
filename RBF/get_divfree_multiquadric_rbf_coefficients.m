@@ -1,6 +1,17 @@
 function [ C, cond_number ] = get_divfree_multiquadric_rbf_coefficients( positions, values, eps )
-%GET_RBF_COEFFICIENTS Summary of this function goes here
-%   Detailed explanation goes here
+%GET_DIVFREE_MULTIQUADRIC_RBF_COEFFICIENTS Calculates the coefficients of the
+%matrix-valued RBF with divergence-free multiquadric kernel 
+%   Arguments:
+%   position: 3D vector at which to evaluate the RBF
+%   nodes: Nx3 matrix of node positions
+%   eps: scalar value of the decay param of the RBF
+%   
+%   Returns:
+%   C: Nx3 matrix with coefficients
+%   cond_number: float with the condition number of the interpolation
+%   matrix
+%
+%   Copyright 2020, Samuel Charreyron
 
     Nd = length(positions);
     

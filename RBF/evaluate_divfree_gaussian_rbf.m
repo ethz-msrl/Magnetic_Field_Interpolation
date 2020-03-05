@@ -1,5 +1,5 @@
 function [ output ] = evaluate_divfree_gaussian_rbf( position, nodes, eps, C )
-%EVALUTE_DIVFREE_RBF Evaluates the value of a 3D divergence-free radial basis
+%EVALUTE_DIVFREE_GAUSSIAN_RBF Evaluates the value of a 3D divergence-free radial basis
 %function with a Gaussian kernel
 %
 %   Evaluates the function:
@@ -12,6 +12,10 @@ function [ output ] = evaluate_divfree_gaussian_rbf( position, nodes, eps, C )
 %   nodes: Nx3 matrix of node positions
 %   eps: scalar value of the decay param of the RBF
 %   C: Nx3 coefficient matrix
+%
+%   output: 3x1 vector interpolated value
+%
+%   Copyright 2020, Samuel Charreyron
 
     xd = nodes(:,1);
     yd = nodes(:,2);

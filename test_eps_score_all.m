@@ -1,3 +1,11 @@
+% calculates the N-RMSE fit for each RBF method over a
+% linear range of shape parameter values and saves the data for use later
+%
+% The bounds are set to be between 0.2 and 2 for all methods, because we
+% are using positions that are normalized to be between 0 and 1.
+%
+%   Copyright 2020, Samuel Charreyron
+
 clear all;
 load_settings;
 

@@ -1,3 +1,10 @@
+% Generates the plot showing the optimal shape parameter of each RBF
+% The positions are normalized using normalize_positions_maxmin so that the
+% optimal parameter does not depend on the scale of the positions but
+% rather on the grid size
+%   Copyright 2020, Samuel Charreyron
+
+clear variables;
 load_settings;
 
 myDir = sprintf('%s/best_eps', options.data_base_path); %gets directory

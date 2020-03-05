@@ -50,6 +50,7 @@ These scripts are used to perform the experiments and generate data in the data 
 
 ## Plotting
 These scripts take the saved data and make plots that are saved as PDF files
+* plot_optimal_eps.m plots the optimal RBF shape parameters at different grid sizes
 * plot_eps_score.m plots the score and condition number for a given RBF method
 * plot_field_gradient_nmae.m plots the field and gradient N-MAE score for each method on increasing grid sizes as a single figure
 * plot_div_curl.m plots the divergence and curl for each method at increasing grid sizes as a single figure

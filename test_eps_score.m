@@ -1,4 +1,12 @@
 function [eps_v, scores, cond_numbers] = test_eps_score(nodes_dataset, type, bounds, options)
+% TEST_EPS_SCORE: calculates the N-RMSE fit for a given RBF method over a
+% linear range of shape parameter values.
+%
+% Because this can be a bit slow, we use a smaller subset of the dataset as
+% for test_fields for example. To control how many currents are in the
+% subset, change NUM_CURRENTS
+%
+% Arguments:
 % nodes_dataset: filename of the nodes file to use
 % type 0: Gaussian RBF3D
 % type 1: Multiquadric 3D
@@ -6,7 +14,16 @@ function [eps_v, scores, cond_numbers] = test_eps_score(nodes_dataset, type, bou
 % type 3: Multiquadric Div-free
 % bounds: an array of two values containing the lower and upper bound of
 % the eps param. It will calculate the score in a linspace array of 20
-% elemnents between the bounds.
+% elements between the bounds.
+%
+% Returns:
+%   eps_v: a 20x1 vector containing the shape parameter values that were
+%   tested
+%   scores: a 20x1 vector containing the N-RMSE with that shape paramter
+%   cond_numbers: a 20x1 vector containing the condition number of the
+%   interpolation matrix for each shape parameter
+%
+%   Copyright 2020, Samuel Charreyron
 
     % load positions
     nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');

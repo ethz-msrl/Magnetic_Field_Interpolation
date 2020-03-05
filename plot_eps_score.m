@@ -1,4 +1,24 @@
-clear all;
+% Generates the plot showing how the interpolation accuracy and condition
+% number vary with the RBF shape parameter 
+%
+% This is useful to show the well-known uncertainty relation in RBF
+% methods. In short, lower values of the shape parameter or "flatter" basis
+% functions should lead to a better interpolation, but they also lead to
+% higher condition numbers of the interpolation matrix. There is therefore
+% a tradeoff between the conditioning and the interpolation power.
+% Ultimatly this leads to an optimal shape parameter for that problem.
+%
+% Here we only plot the relationship for one of the RBF method and for a 
+% single grid size. You can set that with options.rbfs_eps_method and
+% options.rbf_eps_grid
+%
+% The positions are normalized using normalize_positions_maxmin so that the
+% optimal parameter does not depend on the scale of the positions but
+% rather on the grid size
+%
+%   Copyright 2020, Samuel Charreyron
+
+clear variables;
 load_settings;
 
 data_fn = sprintf('%s/eps_score/%s_%d.mat', options.data_base_path, ...

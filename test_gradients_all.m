@@ -1,15 +1,22 @@
-% This script evaluates each method on its ability to predict the gradient
-% To regenerate the data, set RECOMPUTE to 1. If it is 0, the data saved in
-% data/gradients will be loaded to generate the latex table used in the
-% paper
+% This script tests all interpolation methods on their ability to
+% interpolate magnetic field gradients.
+%
+% For the RBF values optimal shape parameters that are obtained from the
+% test_optimal_eps experiment are used. The positions are normalized using
+% normalize_positions_maxmin to be between 0 and 1.
+%
+% For the B-Spline methods, we use a degree that matches the grid size.
+% That seemed to work best for us.
+%
+% The data is saved to data/gradients with a file corresponding to the method
+% name.
+% This script also generates latex code with the results from the Ng=5 grid
+% that can be pasted into the paper.
+%
+%   Copyright 2020, Samuel Charreyron
 
-clear all;
+clear variables;
 load_settings;
-
-% for convenience we save the grid_sizes so that we know what they were
-% later when we are plotting and what not
-%grid_sizes = {3,4,5,6};
-%save('data/grid_sizes', 'grid_sizes');
 
 if options.recompute ~= 0
     disp('Testing RBF Gaussian 3D');

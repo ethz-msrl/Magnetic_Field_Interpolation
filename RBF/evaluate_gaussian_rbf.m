@@ -11,6 +11,12 @@ function [ output, gradient ] = evaluate_gaussian_rbf( position, nodes, eps, C )
 %   nodes: Nx3 matrix of node positions
 %   eps: scalar value of the decay param of the RBF
 %   C: Nx3 coefficient matrix
+%
+%   Returns:
+%   output: 3x1 interpolated value
+%   gradient: 3x3 symmetric gradient of interpolant
+%
+%   Copyright 2020, Samuel Charreyron
 
     xd = nodes(:,1);
     yd = nodes(:,2);

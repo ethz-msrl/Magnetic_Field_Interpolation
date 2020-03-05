@@ -1,5 +1,20 @@
-clear all;
-
+% This script tests all interpolation methods on their ability to
+% interpolate magnetic fields.
+%
+% For the RBF values optimal shape parameters that are obtained from the
+% test_optimal_eps experiment are used. The positions are normalized using
+% normalize_positions_maxmin to be between 0 and 1.
+%
+% For the B-Spline methods, we use a degree that matches the grid size.
+% That seemed to work best for us.
+%
+% The data is saved to data/fields with a file corresponding to the method
+% name.
+% This script also generates latex code with the results from the Ng=5 grid
+% that can be pasted into the paper.
+%
+%   Copyright 2020, Samuel Charreyron
+clear variables;
 load_settings;
 
 if options.recompute ~= 0
@@ -25,11 +40,10 @@ if options.recompute ~= 0
     disp('Testing Scalar Field Tricubic');
     test_fields('TRI-LPL', struct('size', options.grid_sizes), options);
 
+%   this one doesn't really work yet
 %     disp('Testing Divergence Free Tricubic');
 %     test_fields('TRI-DF', struct('size', grid_sizes), noise_std);
 %     
-    % Using a degree equal to the grid size appears to work best for some
-    % reason
     disp('Testing 3D BSpline');
     test_fields('SPL-3D', struct('size', options.grid_sizes, 'degree', options.bspline_degrees), options);
 
@@ -37,14 +51,9 @@ if options.recompute ~= 0
     test_fields('SPL-LPL', struct('size', options.grid_sizes, 'degree', options.bspline_degrees), options);
 end
 
-%% Color Generation
-% colors = containers.Map(model_names(idx), num2cell(cmap', [1,3]));
-% save('data/colors', 'colors');
-% save('data/idx', 'idx');
-
 load_field_data;
 
-%% Table generation
+% This generates a Latex table that can be copied into the paper later
 input.data = [1000*mae(:,3)'; 100*nmae(:,3)'; 1000*rmse(:,3)'; 100*nrmse(:,3)'; r2(:,3)'];
 input.tableRowLabels = {'MAE (mT)', 'N-MAE (\%)', 'RMSE (mT)', 'N-RMSE (\%)', '$R^2$'};
 input.dataFormatMode = 'row';

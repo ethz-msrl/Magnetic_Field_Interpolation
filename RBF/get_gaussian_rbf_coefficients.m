@@ -1,5 +1,18 @@
-function [ C, cond_number ] = get_rbf_coefficients( positions, values, eps )
-%GET_RBF_COEFFICIENTS Calculates the RBF coefficients for a 3D vector field
+function [ C, cond_number ] = get_gaussian_rbf_coefficients( positions, values, eps )
+%GET_GAUSSIAN_RBF_COEFFICIENTS Calculates the RBF coefficients for three
+%   scalar RBF interpolants with a Gaussian kernel
+%
+%   Arguments:
+%   position: 3D vector at which to evaluate the RBF
+%   nodes: Nx3 matrix of node positions
+%   eps: scalar value of the decay param of the RBF
+%   
+%   Returns:
+%   C: Nx3 matrix with coefficients
+%   cond_number: float with the condition number of the interpolation
+%   matrix
+%
+%   Copyright 2020, Samuel Charreyron
 
     Nd = length(positions);
     

@@ -1,5 +1,5 @@
 function [M, B_fun, G_fun] = get_tricubic_3d_matrix()
-    % GETTRICUBIC3DMATRIX
+    % GET_TRICUBIC_3D_MATRIX
     % Here we setup the linear system of constraints for doing tricubic
     % interpolation of a scalar field f(x,y,z) using field and derivative constraints 
 

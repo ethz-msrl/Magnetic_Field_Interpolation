@@ -13,6 +13,10 @@ function [ output ] = evaluate_divfree_multiquadric_rbf_gradient( position, node
 %   nodes: Nx3 matrix of node positions
 %   eps: scalar value of the decay param of the RBF
 %   C: Nx3 coefficient matrix
+%
+%   output 3x3 symmetric gradient matrix
+%
+%   Copyright 2020, Samuel Charreyron
 
 x = position(1) - nodes(:,1)';
 y = position(2) - nodes(:,2)';

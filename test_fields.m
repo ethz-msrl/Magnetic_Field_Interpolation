@@ -6,9 +6,10 @@ function test_fields( model_name, grid, options)
 %   options: a struct containing the global options. See settings.m
 %   
 %   a file will be saved to data/fields/{model_name}_{noise_std}.mat
-    
-    % the results is a struct array with the calculated metrics for each
-    % grid size
+%   The results is a struct array with the calculated metrics for each
+%   grid size and is saved in data/fields for use later
+%
+%   Copyright 2020, Samuel Charreyron
     results = struct('grid_size', {}, 'mae', {}, 'r2', {}, 'mean_div', {}, ...
         'mean_curl', {});
     for g=1:length(grid)

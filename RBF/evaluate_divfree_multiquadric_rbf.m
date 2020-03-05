@@ -13,6 +13,11 @@ function [ output ] = evaluate_divfree_multiquadric_rbf( position, nodes, eps, C
 %   nodes: Nx3 matrix of node positions
 %   eps: scalar value of the decay param of the RBF
 %   C: Nx3 coefficient matrix
+%
+%   output: 3x1 vector interpolated value
+%
+%   Copyright 2020, Samuel Charreyron
+
 
     xd = nodes(:,1);
     yd = nodes(:,2);

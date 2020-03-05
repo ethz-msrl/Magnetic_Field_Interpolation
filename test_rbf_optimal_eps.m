@@ -3,6 +3,9 @@
 % shape parameters
 % the results are somewhat dependent on the bounds of the optimization,
 % so we had to hand tune the bounds a bit to get what we wanted
+% The resulting optimal shape parameters are saved into data/best_eps with
+% a file corresponding to the model name
+%   Copyright 2020, Samuel Charreyron
 
 clear all;
 load_settings;

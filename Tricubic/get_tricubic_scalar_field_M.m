@@ -20,6 +20,7 @@ function [M] = get_tricubic_scalar_field_M()
     % dBx_dy(1) ... dBx_dy(8) ... d2Bx_dydz(1) ... d2Bx_dydz(8) ]
     % and av are the coefficients of the tricubic interpolation
     % sum_i=1^4 sum_j=1^4 sum_k=1^4 a_ijk x^i y^j z^k 
+    %
     %   Copyright 2020, Samuel Charreyron
 
     syms x y z
