@@ -14,7 +14,7 @@ fh_nmae = figure('Name', 'Mean NMAE', 'units', 'inch', ...
     'position', [0, 0, 7, 2.2], 'color', 'w', 'DefaultAxesFontSize', 8);
 ax = subplot(1,2,1);
 colormap(cmap);
-%[~, idx] = sort(nmae(:,1), 1);
+[~, idx] = sort(nmae(:,3), 1);
 
 b = bar([results.grid_size], 100*nmae(idx,:)', 'grouped', 'EdgeColor','none');
 % don't forget to also sort the colors so they match the other figure
