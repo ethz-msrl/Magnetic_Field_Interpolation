@@ -26,7 +26,7 @@ options.print_progress = 1;
 
 % if this is set to 1, it will recompute all the values
 % this takes quite a while
-options.recompute = 0;
+options.recompute = 1;
 
 % these are the grid sizes used in the field and gradient experiments
 options.grid_sizes = {3,4,5,6};

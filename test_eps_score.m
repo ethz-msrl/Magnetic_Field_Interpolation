@@ -1,4 +1,4 @@
-function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, bounds)
+function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, bounds, options)
 % nodes_dataset: filename of the nodes file to use
 % type 0: Gaussian RBF3D
 % type 1: Multiquadric 3D
@@ -7,16 +7,6 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, boun
 % bounds: an array of two values containing the lower and upper bound of
 % the eps param. It will calculate the score in a linspace array of 20
 % elemnents between the bounds.
-%
-% Always evaluates on the Ng=16 grid from the MPEM synthetic dataset
-
-    %nodes_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_4_h5/';
-    EVAL_DATASET = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
-
-    % load currents file
-    currents = h5read('/Volumes/msrl/users/samuelch/datasets/cmag_calibration/currents_3787.h5', '/currents')';
-    
-    noise_std = 0e-6;
 
     % load positions
     nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');
@@ -24,10 +14,8 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, boun
     yg = h5read(nodes_pos_fn, '/yg');
     zg = h5read(nodes_pos_fn, '/zg');
     
-    % normalize positions
-    xg = (xg - min(xg(:))) / (max(xg(:)) - min(xg(:)));
-    yg = (yg - min(yg(:))) / (max(yg(:)) - min(yg(:)));
-    zg = (zg - min(zg(:))) / (max(zg(:)) - min(zg(:)));
+    % normalize positions'
+    [xg, yg, zg, maxp, minp] = normalize_positions_minmax(xg, yg, zg); 
 
     xg = permute(xg, [3, 2, 1]);
     yg = permute(yg, [3, 2, 1]);
@@ -40,23 +28,22 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, boun
     nodes = cat(4, xg, yg, zg);
 
     % load positions
-    eval_pos_fn = fullfile(EVAL_DATASET,'/positions.h5');
+    eval_pos_fn = fullfile(options.eval_dataset,'/positions.h5');
 
     xg_ev = h5read(eval_pos_fn, '/xg');
     yg_ev = h5read(eval_pos_fn, '/yg');
     zg_ev = h5read(eval_pos_fn, '/zg');
     
     % normalize positions
-    xg_ev = (xg_ev - min(xg_ev(:))) / (max(xg_ev(:)) - min(xg_ev(:)));
-    yg_ev = (yg_ev - min(yg_ev(:))) / (max(yg_ev(:)) - min(yg_ev(:)));
-    zg_ev = (zg_ev - min(zg_ev(:))) / (max(zg_ev(:)) - min(zg_ev(:)));
+    [xg_ev, yg_ev, zg_ev] = normalize_positions_minmax(xg_ev, yg_ev, zg_ev, maxp, minp);
 
     xg_ev = permute(xg_ev, [3, 2, 1]);
     yg_ev = permute(yg_ev, [3, 2, 1]);
     zg_ev = permute(zg_ev, [3, 2, 1]);
 
     positions_ev = cat(4, xg_ev, yg_ev, zg_ev);
-
+    
+    % we use a smaller number of currents here or it would take forever
     NUM_CURRENTS = 10;
 
     eps_v = linspace(bounds(1), bounds(2), 20);
@@ -72,9 +59,9 @@ function [eps_v, scores, cond_numbers] = get_eps_score(nodes_dataset, type, boun
             fields = permute(fields, [4, 3, 2, 1]);
             
             % adding random noise
-            fields = fields + noise_std * randn(size(fields));
+            fields = fields + options.noise_std * randn(size(fields));
 
-            fields_ev = h5read(fullfile(EVAL_DATASET, 'v', sprintf('%04d.h5', j)), '/fields');
+            fields_ev = h5read(fullfile(options.eval_dataset, 'v', sprintf('%04d.h5', j)), '/fields');
             fields_ev = permute(fields_ev, [4, 3, 2, 1]);
 
             if type == 0
