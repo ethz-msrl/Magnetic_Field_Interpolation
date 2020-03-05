@@ -1,6 +1,7 @@
 classdef FieldInterpolatorEvaluator < handle
     %FIELDINTERPOLATOREVALUATOR Used For Evaluating the Performance of a
     % magnetic field interpolation model
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = protected)
         NodePositions

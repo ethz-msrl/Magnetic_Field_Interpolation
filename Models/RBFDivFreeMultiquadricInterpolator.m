@@ -1,6 +1,7 @@
 classdef RBFDivFreeMultiquadricInterpolator < FieldInterpolator
-    %DIVFREERBFINTERPOLATOR Interpolates a 3D vector field by using a
-    % 3D divergence-free kernel
+    %RBFDIVFREEMULTIQUADRICINTERPOLATOR Interpolates a 3D vector field by using
+    % a multiquadric divergence-free matrix-valued kernel
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         Eps

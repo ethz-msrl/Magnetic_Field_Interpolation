@@ -1,6 +1,14 @@
 function [ hess ] = tricubic_hess( A, x, y, z )
-%TRICUBICHESS Summary of this function goes here
-%   Detailed explanation goes here
+%TRICUBICHESS Calculates the Hessian of a tricubic function
+%   Arguments:
+%               A: as in tricubic, it should be 4x4x4 matrix
+%               x: should be a scalar
+%               y: should be a scalar
+%               z: should be a scalar
+%   Returns:
+%               hess: a 3x3 symmetric Hessian matrix
+%
+%   Copyright 2020, Samuel Charreyron
 
 xv = [x^3, x^2, x, 1]';
 xv1 = [3*x^2, 2*x, 1, 0]';

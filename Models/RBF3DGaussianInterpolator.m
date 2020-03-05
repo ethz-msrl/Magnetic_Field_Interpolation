@@ -1,8 +1,9 @@
 classdef RBF3DGaussianInterpolator < FieldInterpolator
-    %SIMPLERBFINTERPOLATOR Interpolates a 3D vector field by creating a Gaussian RBF
+    %RBF3DGaussianInterpolator Interpolates a 3D vector field by creating a Gaussian RBF
     %   for each dimension
     %   B_i = sum_i^N c_i * exp(-eps * ||pos - node_i||^2)
     %   for N nodes
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         Eps
@@ -21,7 +22,6 @@ classdef RBF3DGaussianInterpolator < FieldInterpolator
             %           values (4D array): the field values at the node
             %           positions. The dimensions are Nx,Ny,Nz,3
             %           eps (float): the weighting term of the Gaussian RBF
-            %obj.Steps = size(nodes, 1:3);
             
             obj.NodePositions = reshape(nodes, [], 3);
             

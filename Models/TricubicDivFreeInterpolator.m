@@ -1,6 +1,8 @@
 classdef TricubicDivFreeInterpolator < FieldInterpolator
-    %SIMPLETRICUBICINTERPOLATOR Performs tricubic interpolation separately
-    % on the three field dimensions
+    %TRICUBICDIVFREEINTERPOLATOR Interpolates the magnetic vector potential
+    % WARNING: Not fully working
+    % the magnetic field is then the curl of the magnetic vector potential
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         M

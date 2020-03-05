@@ -1,6 +1,7 @@
 classdef Tricubic3DInterpolator < FieldInterpolator
-    %SIMPLETRICUBICINTERPOLATOR Performs tricubic interpolation separately
+    %TRICUBIC3D Performs tricubic interpolation separately
     % on the three field dimensions
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         M

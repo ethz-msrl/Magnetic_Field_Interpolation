@@ -1,6 +1,11 @@
 classdef TricubicScalarFieldInterpolator < FieldInterpolator
-    %SIMPLETRICUBICINTERPOLATOR Performs tricubic interpolation separately
-    % on the three field dimensions
+    %TRICUBICSCALARFIELDINTERPOLATOR Performs tricubic interpolation on
+    % a magnetic scalar potential. 
+    %   The magnetic field is the negative gradient of the scalar potential
+    %   The magnetic field at the voxel corners, as well as dbx/dy dbx/dz
+    %   dfy/dz d2fx/dydz are constrained at the corners. the laplacian is
+    %   also constrained to be 0 at the voxel corners
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         M
@@ -114,9 +119,6 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
                             obj.dvg_dyz(ix+1, iy+1, iz+1, 1);
                             ]);
 
-                        %a_sol = obj.M(9:32,:) \ D(9:32,:);
-                        %a_sol = obj.M(32:end,:) \ D(32:end,:);
-                        %a_sol = obj.M(1:56,:) \ D(1:56,:);
                         a_sol = obj.M \ D;
                         obj.Coefs(ix, iy, iz, :, :) = [0;a_sol];
                     end
@@ -127,20 +129,22 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
         function field = getFieldAtPosition(obj, position)
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
-            %field = -tricubic_grad(A_sol, xe, ye, ze);
+            % because the positions are normalized by the step sizes, we
+            % need to scale all the derivatives
             field = -tricubic_grad(A_sol, xe, ye, ze) ./ obj.Steps';
         end
         
         function gradient = getGradientAtPosition(obj, position)
             [ix, iy, iz, xe, ye, ze] = obj.getIndices(position);
             A_sol = reshape(obj.Coefs(ix, iy, iz, :, :), [4, 4, 4]);
+            
+            % the magnetic field gradient is the hessian of the scalar
+            % potential
             H = -tricubic_hess(A_sol, xe, ye, ze);
-            %gradient = H;
-           
+            
+            % because the positions are normalized by the step sizes, we
+            % need to scale all the derivatives
             gradient =  H ./ (obj.Steps'.* obj.Steps);
-            %gradient = [H(1,:)/obj.Steps(1); ...
-%                 H(2,:)/obj.Steps(2); ...
-%                 H(3,:)/obj.Steps(3)];
         end
         
         function gradient = getGradientAtPositionNumeric(obj, position)

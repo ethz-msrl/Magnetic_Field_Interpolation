@@ -1,4 +1,5 @@
 function [M, B_fun, G_fun] = get_tricubic_3d_matrix()
+    % GETTRICUBIC3DMATRIX
     % Here we setup the linear system of constraints for doing tricubic
     % interpolation of a scalar field f(x,y,z) using field and derivative constraints 
 
@@ -19,6 +20,8 @@ function [M, B_fun, G_fun] = get_tricubic_3d_matrix()
     %   with a vector of coefficients
     %   G_fun: handle to matlab function for performing gradient of 1D
     %   interpolation with a vector of coefficients
+    %
+    %   Copyright 2020, Samuel Charreyron
 
     syms x y z
     A = sym('a%d%d%d', [4, 4, 4], 'real');

@@ -1,8 +1,9 @@
 classdef RBF3DMultiquadricInterpolator < FieldInterpolator
-    %SIMPLERBFINTERPOLATOR Interpolates a 3D vector field by creating a multiquadric RBF
+    %RBF3DMULTIQUADRICINTERPOLATOR Interpolates a 3D vector field by creating a multiquadric RBF
     %   for each dimension
     %   B_i = sum_i^N c_i sqrt(1 + eps * ||pos - node_i||^2)
     %   for N nodes
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = private)
         Eps

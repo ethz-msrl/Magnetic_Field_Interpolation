@@ -1,5 +1,5 @@
 function [xgn, ygn, zgn, maxp, minp] = normalize_positions_minmax(xg, yg, zg, varargin)
-%% NORMALIZE_POSITIONS_MINMAX normalizes the positions to be between 0 and 1
+% NORMALIZE_POSITIONS_MINMAX normalizes the positions to be between 0 and 1
 %  xg, yg, zg are arrays to be normalized
 %
 %  normalize_positions_minmax(xg, yg, zg) will normalize based on the
@@ -12,6 +12,9 @@ function [xgn, ygn, zgn, maxp, minp] = normalize_positions_minmax(xg, yg, zg, va
 %  normalization. If they are supplied, they will be used. If not, the min
 %  and max values will be determined from the xg, yg, zg arrays
 %  the maxp and minp are returned for use in normalization later
+%
+%   Copyright 2020, Samuel Charreyron
+
     if nargin == 5
         maxp = varargin{1};
         minp = varargin{2};

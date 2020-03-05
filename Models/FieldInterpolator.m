@@ -1,6 +1,7 @@
 classdef FieldInterpolator < handle
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %FIELDINTERPOLATOR Abstract base class for all magnetic field
+    %interpolation methods
+    %   Copyright 2020, Samuel Charreyron
     
     properties (SetAccess = protected)
         NodePositions
@@ -12,10 +13,6 @@ classdef FieldInterpolator < handle
     end
     
     methods
-%         function obj = FieldInterpolator(nodes, values)
-%             obj.NodePositions = nodes;
-%             obj.NodeValues = values;
-%         end
         
         % non vectorized function to get fields at several positions
         % override with better version if you can vectorize

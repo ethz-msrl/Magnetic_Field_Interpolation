@@ -1,6 +1,7 @@
 classdef BSplineLaplacianInterpolator < FieldInterpolator
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %BSplineLaplacianInterpolator Interpolates using B-Splines with the
+    %laplacian constrained to be zero on the grid of knot points
+    %   Copyright 2020, Samuel Charreyron
     
     properties 
         D

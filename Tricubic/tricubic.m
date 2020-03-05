@@ -12,6 +12,7 @@ function [ y ] = tricubic( A, x, y, z )
 %               z: should be a scalar
 %   Returns:
 %               y: a scalar function corresponding to the tricubic value
+%   Copyright 2020, Samuel Charreyron
 
 xv = kron(kron([x^3, x^2, x, 1], [y^3, y^2, y, 1]), [z^3, z^2, z, 1])';
 % av is the vector arrangement of A which is 4x4x4
