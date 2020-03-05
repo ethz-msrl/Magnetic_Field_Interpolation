@@ -2,7 +2,7 @@ options = struct();
 
 % the number of currents that are picked randomly from the dataset
 % to form the evaluation set
-options.num_currents = 10;
+options.num_currents = 100;
 
 % the standard deviation of some normal noise to add to the true references
 % leave at 0 for no noise added
