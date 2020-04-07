@@ -8,7 +8,7 @@ function [ grad ] = tricubic_grad( A, x, y, z )
 %   Returns:
 %               grad: a 1x3 gradient vector
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 xv = kron(kron([3*x^2, 2*x, 1, 0], [y^3, y^2, y, 1]), [z^3, z^2, z, 1])';
 yv = kron(kron([x^3, x^2, x, 1], [3*y^2, 2*y, 1, 0]), [z^3, z^2, z, 1])';

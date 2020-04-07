@@ -21,7 +21,7 @@ function [M, B_fun, G_fun] = get_tricubic_3d_matrix()
     %   G_fun: handle to matlab function for performing gradient of 1D
     %   interpolation with a vector of coefficients
     %
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     syms x y z
     A = sym('a%d%d%d', [4, 4, 4], 'real');

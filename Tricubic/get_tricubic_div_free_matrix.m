@@ -34,7 +34,7 @@ function [M, B_fun, G_fun] = get_tricubic_div_free_matrix()
 %       - the interpolation matrix M
 %       - the interpolation function 
 %       - the gradient function
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     syms x y z
     Ax = sym('ax%d%d%d', [4, 4, 4]);

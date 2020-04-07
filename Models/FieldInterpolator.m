@@ -1,7 +1,7 @@
 classdef FieldInterpolator < handle
     %FIELDINTERPOLATOR Abstract base class for all magnetic field
     %interpolation methods
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = protected)
         NodePositions

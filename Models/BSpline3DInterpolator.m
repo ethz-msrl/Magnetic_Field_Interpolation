@@ -1,6 +1,6 @@
 classdef BSpline3DInterpolator < FieldInterpolator
     %BSPLINE3DINTERPOLATOR Evaluates a 3D B-Spline of degree D with no constraints
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties 
         D

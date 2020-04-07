@@ -16,7 +16,7 @@
 % optimal parameter does not depend on the scale of the positions but
 % rather on the grid size
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 clear variables;
 load_settings;

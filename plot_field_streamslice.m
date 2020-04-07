@@ -6,7 +6,7 @@ function  plot_field_streamslice( model_name, grid_size, current_index, noise_st
 %   noise_std: the standard deviation or Normally distributed noise to add
 %   to the data (set to 0 for no noise)
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 i = current_index;
 

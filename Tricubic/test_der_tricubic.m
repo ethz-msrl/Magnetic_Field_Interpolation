@@ -1,7 +1,7 @@
 %% This script is to test that the derivatives of the tribubic interpolator
 % are calculated correctly. We compute the derivatives using an analytical
 % expression and calculate them with numerical derivatives and compare
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 A = rand(4,4,4);
 

@@ -4,7 +4,7 @@
 % The bounds are set to be between 0.2 and 2 for all methods, because we
 % are using positions that are normalized to be between 0 and 1.
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 clear all;
 load_settings;

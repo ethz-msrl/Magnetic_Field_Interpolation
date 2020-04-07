@@ -8,7 +8,7 @@ function [ hess ] = tricubic_hess( A, x, y, z )
 %   Returns:
 %               hess: a 3x3 symmetric Hessian matrix
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 xv = [x^3, x^2, x, 1]';
 xv1 = [3*x^2, 2*x, 1, 0]';

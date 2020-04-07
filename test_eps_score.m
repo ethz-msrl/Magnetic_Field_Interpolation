@@ -23,7 +23,7 @@ function [eps_v, scores, cond_numbers] = test_eps_score(nodes_dataset, type, bou
 %   cond_numbers: a 20x1 vector containing the condition number of the
 %   interpolation matrix for each shape parameter
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     % load positions
     nodes_pos_fn = fullfile(nodes_dataset,'/positions.h5');

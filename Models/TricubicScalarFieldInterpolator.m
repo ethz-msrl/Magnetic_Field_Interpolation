@@ -6,7 +6,7 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
     %   dfy/dz d2fx/dydz are constrained at the corners. the laplacian is
     %   also constrained to be 0 at the voxel corners
     %
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = private)
         M

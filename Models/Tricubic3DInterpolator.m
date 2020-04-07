@@ -1,7 +1,7 @@
 classdef Tricubic3DInterpolator < FieldInterpolator
     %TRICUBIC3D Performs tricubic interpolation separately
     % on the three field dimensions
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = private)
         M

@@ -8,7 +8,7 @@
 % The error metric is averaged over all positions, currents, and components. 
 % For the gradients we also average over all components of the gradient.
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 clear variables;
 close all;

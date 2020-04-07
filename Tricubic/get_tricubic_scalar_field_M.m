@@ -21,7 +21,7 @@ function [M] = get_tricubic_scalar_field_M()
     % and av are the coefficients of the tricubic interpolation
     % sum_i=1^4 sum_j=1^4 sum_k=1^4 a_ijk x^i y^j z^k 
     %
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     syms x y z
     A = sym('a%d%d%d', [4, 4, 4]);

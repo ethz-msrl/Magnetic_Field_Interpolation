@@ -1,7 +1,7 @@
 classdef RBFDivFreeGaussianInterpolator < FieldInterpolator
     %RBFDIVFREEGAUSSIANINTERPOLATOR Interpolates a 3D vector field by using
     % a Gaussian divergence-free matrix-valued kernel
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = private)
         Eps

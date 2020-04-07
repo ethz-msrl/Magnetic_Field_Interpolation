@@ -2,7 +2,7 @@ classdef TricubicDivFreeInterpolator < FieldInterpolator
     %TRICUBICDIVFREEINTERPOLATOR Interpolates the magnetic vector potential
     % WARNING: Not fully working
     % the magnetic field is then the curl of the magnetic vector potential
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = private)
         M

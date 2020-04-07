@@ -17,7 +17,7 @@ function [ output, gradient ] = evaluate_multiquadric_rbf( position, nodes, eps,
 %   output: 3x1 interpolated value
 %   gradient: 3x3 symmetric gradient of interpolant
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     xd = nodes(:,1);
     yd = nodes(:,2);

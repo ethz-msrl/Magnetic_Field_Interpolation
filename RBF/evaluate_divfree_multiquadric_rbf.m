@@ -16,7 +16,7 @@ function [ output ] = evaluate_divfree_multiquadric_rbf( position, nodes, eps, C
 %
 %   output: 3x1 vector interpolated value
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 
     xd = nodes(:,1);

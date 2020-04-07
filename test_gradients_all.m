@@ -13,7 +13,7 @@
 % This script also generates latex code with the results from the Ng=5 grid
 % that can be pasted into the paper.
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 clear variables;
 load_settings;

@@ -15,7 +15,7 @@ function [ output ] = evaluate_divfree_gaussian_rbf_gradient( position, nodes, e
 %
 %   output 3x3 symmetric gradient matrix
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 x = position(1) - nodes(:,1)';
 y = position(2) - nodes(:,2)';

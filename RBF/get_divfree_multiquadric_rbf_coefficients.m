@@ -11,7 +11,7 @@ function [ C, cond_number ] = get_divfree_multiquadric_rbf_coefficients( positio
 %   cond_number: float with the condition number of the interpolation
 %   matrix
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     Nd = length(positions);
     

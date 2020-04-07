@@ -13,7 +13,7 @@ function [xgn, ygn, zgn, maxp, minp] = normalize_positions_minmax(xg, yg, zg, va
 %  and max values will be determined from the xg, yg, zg arrays
 %  the maxp and minp are returned for use in normalization later
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
     if nargin == 5
         maxp = varargin{1};

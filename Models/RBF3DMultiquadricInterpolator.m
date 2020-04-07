@@ -3,7 +3,7 @@ classdef RBF3DMultiquadricInterpolator < FieldInterpolator
     %   for each dimension
     %   B_i = sum_i^N c_i sqrt(1 + eps * ||pos - node_i||^2)
     %   for N nodes
-    %   Copyright 2020, Samuel Charreyron
+    %   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     
     properties (SetAccess = private)
         Eps

@@ -9,7 +9,7 @@ function test_fields( model_name, grid, options)
 %   The results is a struct array with the calculated metrics for each
 %   grid size and is saved in data/fields for use later
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
     results = struct('grid_size', {}, 'mae', {}, 'r2', {}, 'mean_div', {}, ...
         'mean_curl', {});
     for g=1:length(grid)

@@ -16,7 +16,7 @@
 % field and gradient plots on this figure, I disabled the legend. I just
 % copy it over manually onto the figure in Illustrator later.
 %
-%   Copyright 2020, Samuel Charreyron
+%   Copyright 2020, ETH Zurich, Multi Scale Robotics Lab, Samuel Charreyron
 
 clear variables;
 close all;
