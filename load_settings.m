@@ -9,14 +9,14 @@ options.num_currents = 100;
 options.noise_std = 0;
 
 % path to the dataset that we use for evaluation
-options.eval_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_16_h5/';
+options.eval_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_synthetic_mpem_v1/mpem_synthetic_16_h5/';
 
 % path to the base dataset that we use for the interpolant
 % this string will be formatted later to replace in the right grid size
-options.base_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/mpem_synthetic_%d_h5/';
+options.base_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_synthetic_mpem_v1/mpem_synthetic_%d_h5/';
 
 % path to the currents
-options.currents_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_calibration/currents_3787.h5';
+options.currents_dataset = '/Volumes/msrl/users/samuelch/datasets/cmag_synthetic_mpem_v1/currents_3787.h5';
 
 % path at which to store all the results
 options.data_base_path = 'data';
