@@ -27,9 +27,9 @@ function test_fields( model_name, grid, options)
         zg = h5read(nodes_pos_fn, '/zg');
         
         % the positions are in the z,y,x format because of deep-fluids
-        xg = permute(xg, [3, 2, 1]);
-        yg = permute(yg, [3, 2, 1]);
-        zg = permute(zg, [3, 2, 1]);
+%         xg = permute(xg, [3, 2, 1]);
+%         yg = permute(yg, [3, 2, 1]);
+%         zg = permute(zg, [3, 2, 1]);
 
         nodes = cat(4, xg, yg, zg);
 
@@ -41,9 +41,9 @@ function test_fields( model_name, grid, options)
         yg_ev = h5read(eval_pos_fn, '/yg');
         zg_ev = h5read(eval_pos_fn, '/zg');
         
-        xg_ev = permute(xg_ev, [3, 2, 1]);
-        yg_ev = permute(yg_ev, [3, 2, 1]);
-        zg_ev = permute(zg_ev, [3, 2, 1]);
+%         xg_ev = permute(xg_ev, [3, 2, 1]);
+%         yg_ev = permute(yg_ev, [3, 2, 1]);
+%         zg_ev = permute(zg_ev, [3, 2, 1]);
         
         % the positions are in the z,y,x format because of deep-fluids
         positions_ev = cat(4, xg_ev, yg_ev, zg_ev);
@@ -65,7 +65,9 @@ function test_fields( model_name, grid, options)
 
         for i=1:options.num_currents
             fields = h5read(fullfile(nodes_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
-            fields = permute(fields, [4, 3, 2, 1]);
+            %fields = permute(fields, [4, 3, 2, 1]);
+            fields = permute(fields, [2,3,4,1]);
+
             % adding random noise
             % We use this even for experiments without noise where the
             % noise_std is 0
@@ -75,7 +77,8 @@ function test_fields( model_name, grid, options)
             % note that they are obtained from synthetic data generated
             % with the MPEM so they are naturally curl and divergence free
             fields_ev = h5read(fullfile(options.eval_dataset, 'v', sprintf('%04d.h5', i)), '/fields');
-            fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+            %fields_ev = permute(fields_ev, [4, 3, 2, 1]);
+            fields_ev = permute(fields_ev, [2,3,4,1]);
 
             if strcmp(model_name, 'RBF-G-3D')
                 % the shape parameter of the RBF

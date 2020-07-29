@@ -38,10 +38,8 @@ classdef TricubicScalarFieldInterpolator < FieldInterpolator
             pmax = max(reshape(obj.NodePositions, [],3),[],1);
             obj.Steps = (pmax - pmin) ./ (size(obj.NodePositions(:,:,:,1)) - 1);
             
-            % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
-            vg = obj.NodeValues;
-            obj.VG = permute(vg, [3,2,1,4]);
-            
+            obj.VG = obj.NodeValues;
+
             % here we prescale the interpolation values by the scale
             obj.VG = obj.VG .* permute(repmat(obj.Steps, [obj.Nx,1,obj.Ny, obj.Nz]), ...
                 [1,3,4,2]);

@@ -23,14 +23,11 @@ classdef Tricubic3DInterpolator < FieldInterpolator
     methods
         function obj = Tricubic3DInterpolator(nodes, values, M)
             obj.NodePositions = nodes;
-            obj.NodeValues = values;
+            obj.VG = values;
             obj.Nx = size(obj.NodePositions, 1);
             obj.Ny = size(obj.NodePositions, 2);
             obj.Nz = size(obj.NodePositions, 3);
             obj.M = M;
-            % we need to convert data axes from Z,Y,X ngrid to X,Y,Z
-            vg = obj.NodeValues;
-            obj.VG = permute(vg, [3,2,1,4]);
             [obj.dvg_dy, obj.dvg_dx, obj.dvg_dz] = gradient(obj.VG);
             [obj.dvg_dxy, ~, obj.dvg_dxz] = gradient(obj.dvg_dx);
             [~,~,obj.dvg_dyz] = gradient(obj.dvg_dy);
