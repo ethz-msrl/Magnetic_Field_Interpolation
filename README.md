@@ -58,7 +58,7 @@ These scripts take the saved data and make plots that are saved as PDF files
 ## Getting the synthetic dataset
 The experiments run using a pregrenerated synthetic dataset that was generated with the MPEM. These datasets are available for a number of random electromagnet currents (Ne=8) and at various grid sizes from 3 to 32. The dataset is stored in HDF5 files.
 
-The dataset can be obtained here. Make sure to set the correct path to the dataset files in the load_settings.m file.
+The dataset can be obtained [here](https://www.research-collection.ethz.ch/handle/20.500.11850/408738). Make sure to set the correct path to the dataset files in the load_settings.m file.
 
 
 Copyright 2020, Samuel Charreyron, All rights reserved.
